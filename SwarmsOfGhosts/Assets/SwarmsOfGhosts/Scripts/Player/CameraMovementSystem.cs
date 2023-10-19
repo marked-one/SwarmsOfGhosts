@@ -13,10 +13,7 @@ namespace SwarmsOfGhosts.Player
         private Entity _player;
 
         [BurstCompile]
-        protected override void OnCreate()
-        {
-            RequireSingletonForUpdate<PlayerTag>();
-        }
+        protected override void OnCreate() => RequireSingletonForUpdate<PlayerTag>();
 
         [BurstCompile]
         protected override void OnStartRunning()
