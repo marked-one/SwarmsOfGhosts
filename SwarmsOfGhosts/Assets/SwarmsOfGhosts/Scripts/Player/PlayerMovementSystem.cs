@@ -17,16 +17,17 @@ namespace SwarmsOfGhosts.Player
             Entities.ForEach((
                 ref Translation translation,
                 ref Rotation rotation,
-                in PlayerMovement playerMovement,
-                in PlayerMovementSpeed playerSpeed) => {
-                translation.Value.xz += playerMovement.Value * playerSpeed.Value * deltaTime;
+                in PlayerMovement movement,
+                in PlayerMovementSpeed speed) =>
+            {
+                translation.Value.xz += movement.Value * speed.Value * deltaTime;
 
-                if (math.lengthsq(playerMovement.Value) > float.Epsilon)
+                if (math.lengthsq(movement.Value) > float.Epsilon)
                 {
-                    var forward = new float3(playerMovement.Value.x, 0f, playerMovement.Value.y);
+                    var forward = new float3(movement.Value.x, 0f, movement.Value.y);
                     rotation.Value = quaternion.LookRotation(forward, math.up());
                 }
-            }).Schedule();
+            }).ScheduleParallel();
         }
     }
 }
