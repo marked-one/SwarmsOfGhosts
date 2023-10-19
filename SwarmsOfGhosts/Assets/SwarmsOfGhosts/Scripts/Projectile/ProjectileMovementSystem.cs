@@ -28,10 +28,8 @@ namespace SwarmsOfGhosts.Projectile
                     .AsParallelWriter();
 
             Entities.ForEach((
-                Entity entity,
-                int entityInQueryIndex,
-                ref Translation translation,
-                in Rotation rotation,
+                Entity entity, int entityInQueryIndex,
+                ref Translation translation, in Rotation rotation,
                 in ProjectileStartPosition startPosition,
                 in ProjectileSpeed speed,
                 in ProjectileDestroyDistance destroyDistance) =>

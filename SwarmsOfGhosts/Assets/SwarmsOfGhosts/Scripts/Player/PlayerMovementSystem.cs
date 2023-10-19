@@ -14,14 +14,10 @@ namespace SwarmsOfGhosts.Player
         {
             var deltaTime = Time.DeltaTime;
 
-            Entities.ForEach((
-                ref Translation translation,
-                ref Rotation rotation,
-                in PlayerMovement movement,
-                in PlayerMovementSpeed speed) =>
+            Entities.ForEach((ref Translation translation, ref Rotation rotation,
+                in PlayerMovement movement, in PlayerMovementSpeed speed) =>
             {
                 translation.Value.xz += movement.Value * speed.Value * deltaTime;
-
                 if (math.lengthsq(movement.Value) > float.Epsilon)
                 {
                     var forward = new float3(movement.Value.x, 0f, movement.Value.y);

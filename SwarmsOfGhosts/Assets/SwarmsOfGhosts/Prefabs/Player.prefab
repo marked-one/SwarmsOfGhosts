@@ -122,6 +122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1322201832427052901}
   - component: {fileID: 4951971439577231708}
+  - component: {fileID: 1747087253603433258}
   m_Layer: 0
   m_Name: ProjectileSpawner
   m_TagString: Untagged
@@ -159,6 +160,18 @@ MonoBehaviour:
   SpawnInterval: 0.1
   Speed: 30
   DestroyDistance: 20
+--- !u!114 &1747087253603433258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3890757654814980806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c16428bddd146e8a645d3a3d42eedef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7160460181398433561
 GameObject:
   m_ObjectHideFlags: 0
@@ -172,6 +185,7 @@ GameObject:
   - component: {fileID: 7160460181398433543}
   - component: {fileID: 422936333050880924}
   - component: {fileID: -7346072239024100435}
+  - component: {fileID: -7204172152715880832}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -270,6 +284,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Value: 10
+--- !u!114 &-7204172152715880832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7160460181398433561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea7d7495833204790ba1d3a8755397f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ConversionMode: 0
 --- !u!1 &7353991109666214536
 GameObject:
   m_ObjectHideFlags: 0
