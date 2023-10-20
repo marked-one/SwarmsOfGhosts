@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7225621451960960269}
   - component: {fileID: 972766996874558515}
   - component: {fileID: 5871358676374117780}
+  - component: {fileID: 4585871584152456827}
   m_Layer: 0
   m_Name: LeftEye
   m_TagString: Untagged
@@ -81,6 +82,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4585871584152456827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 243028873265948276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eb30a150ee74cc79c06f149bc452e8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3758748328679097938
 GameObject:
   m_ObjectHideFlags: 0
@@ -184,7 +197,6 @@ GameObject:
   - component: {fileID: 7160460181398433540}
   - component: {fileID: 7160460181398433543}
   - component: {fileID: 422936333050880924}
-  - component: {fileID: -7346072239024100435}
   - component: {fileID: -7204172152715880832}
   m_Layer: 0
   m_Name: Player
@@ -201,7 +213,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7160460181398433561}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2285225093781296206}
@@ -271,19 +283,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d3cc67227284421ac4732168bab51a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-7346072239024100435
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7160460181398433561}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bf4d0cf4ad3fbf49a556cbdfd8834e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Value: 10
 --- !u!114 &-7204172152715880832
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -391,6 +390,7 @@ GameObject:
   - component: {fileID: 1285872874401740582}
   - component: {fileID: 620011020015919914}
   - component: {fileID: 1107827205155910579}
+  - component: {fileID: 4852910745139511032}
   m_Layer: 0
   m_Name: RightEye
   m_TagString: Untagged
@@ -474,3 +474,15 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4852910745139511032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8389039090328348065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eb30a150ee74cc79c06f149bc452e8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
