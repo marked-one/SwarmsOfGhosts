@@ -46,6 +46,7 @@ namespace SwarmsOfGhosts.Gameplay.Player
                     var random = randomArray[nativeThreadIndex];
                     InstantiatePlayer(entityInQueryIndex, ref beginSimulationCommandBuffer,
                         spawnTranslation, spawnSettings, playerSettings, ref random);
+                    randomArray[nativeThreadIndex] = random;
                 })
                 .ScheduleParallel();
 
@@ -65,12 +66,10 @@ namespace SwarmsOfGhosts.Gameplay.Player
             beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity,
                 new Translation { Value = spawnTranslation.Value });
 
-            beginSimulationCommandBuffer.AddComponent<PlayerMovementSpeed>(entityInQueryIndex, entity);
-            beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity, new PlayerMovementSpeed
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity, new PlayerMovementSpeed
                 { Value = playerSettings.Speed });
 
-            beginSimulationCommandBuffer.AddComponent<URPMaterialPropertyBaseColor>(entityInQueryIndex, entity);
-            beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity,
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
                 new URPMaterialPropertyBaseColor { Value = new float4(random.NextFloat3(), 1.0f) });
         }
 

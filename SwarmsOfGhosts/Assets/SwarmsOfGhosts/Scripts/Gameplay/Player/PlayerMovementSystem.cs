@@ -6,7 +6,7 @@ using Unity.Transforms;
 namespace SwarmsOfGhosts.Gameplay.Player
 {
     [BurstCompile]
-    [UpdateBefore(typeof(TransformSystemGroup))]
+    [UpdateInGroup(typeof(TransformSystemGroup))]
     public partial class PlayerMovementSystem : SystemBase
     {
         [BurstCompile]
@@ -18,7 +18,7 @@ namespace SwarmsOfGhosts.Gameplay.Player
                 in PlayerMovement movement, in PlayerMovementSpeed speed) =>
             {
                 translation.Value.xz += movement.Value * speed.Value * deltaTime;
-                if (math.lengthsq(movement.Value) > float.Epsilon)
+                if (math.length(movement.Value) > math.EPSILON)
                 {
                     var forward = new float3(movement.Value.x, 0f, movement.Value.y);
                     rotation.Value = quaternion.LookRotation(forward, math.up());

@@ -8,5 +8,8 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
     {
         public float2 SpeedRange;
         public float2 TransparencyRange;
+        public float Scale;
+        public int GrowthStep;
+        public float GrowthLimit;
     }
 }

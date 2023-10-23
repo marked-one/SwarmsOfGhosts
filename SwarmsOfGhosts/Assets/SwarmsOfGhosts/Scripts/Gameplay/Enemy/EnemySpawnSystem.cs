@@ -1,11 +1,17 @@
-﻿using System;
-using SwarmsOfGhosts.Gameplay.Environment;
+﻿using SwarmsOfGhosts.Gameplay.Environment;
 using SwarmsOfGhosts.Gameplay.Utilities;
 using Unity.Burst;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Rendering;
 using Unity.Transforms;
+using CapsuleCollider = Unity.Physics.CapsuleCollider;
+using Collider = Unity.Physics.Collider;
+using Material = Unity.Physics.Material;
 using Random = Unity.Mathematics.Random;
 
 namespace SwarmsOfGhosts.Gameplay.Enemy
@@ -15,8 +21,21 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
     [UpdateAfter(typeof(RandomSystem))]
     public partial class EnemySpawnSystem : SystemBase
     {
+        public struct ColliderDefaults
+        {
+            public float CapsuleDefaultRadius;
+            public float3 CapsuleDefaultVertex0;
+            public float3 CapsuleDefaultVertex1;
+            public float DefaultScale;
+            public int ScaleStep;
+        }
+
         private RandomSystem _randomSystem;
         private BeginSimulationEntityCommandBufferSystem _beginSimulationEntityCommandBufferSystem;
+
+        private EntityQuery _spawnsQuery;
+        public NativeArray<int> ColliderCacheSizes { get; private set; }
+        public NativeArray<BlobAssetReference<Collider>> ColliderCaches { get; private set; }
 
         [BurstCompile]
         protected override void OnCreate()
@@ -25,19 +44,32 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
 
             _beginSimulationEntityCommandBufferSystem =
                 World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();
+
+            _spawnsQuery = GetEntityQuery(
+                ComponentType.ReadOnly<EnemySettings>(),
+                ComponentType.ReadOnly<EnemySpawnTag>());
         }
 
         [BurstCompile]
         protected override void OnStartRunning()
         {
-            var randomArray = _randomSystem.RandomArray;
+            var spawnEntities = _spawnsQuery.ToEntityArrayAsync(Allocator.TempJob, out var spawnEntitiesJobHandle);
+            var colliderDefaults = new NativeArray<ColliderDefaults>(spawnEntities.Length, Allocator.Persistent);
+            var collidersCacheSizes = new NativeArray<int>(spawnEntities.Length, Allocator.Persistent);
+            spawnEntities.Dispose();
+
+            var jobHandles = new NativeArray<JobHandle>(3, Allocator.Temp);
+            jobHandles[0] = Dependency;
+            jobHandles[1] = spawnEntitiesJobHandle;
+            var combinedJobHandle = JobHandle.CombineDependencies(jobHandles);
 
             var beginSimulationCommandBuffer =
                 _beginSimulationEntityCommandBufferSystem
                     .CreateCommandBuffer()
                     .AsParallelWriter();
 
-            Entities
+            var randomArray = _randomSystem.RandomArray;
+            Dependency = Entities
                 .WithNativeDisableParallelForRestriction(randomArray)
                 .ForEach((
                     int nativeThreadIndex,
@@ -58,10 +90,82 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
 
                     InstantiateEnemies(entityInQueryIndex, ref beginSimulationCommandBuffer, enemySpawnTranslation,
                         enemySpawnSettings, enemySettings, enemyGridDimensionSize, enemySpread, ref random);
+
+                    var prefabPhysicsCollider = GetComponent<PhysicsCollider>(enemySpawnSettings.Prefab);
+                    CreateColliderDefaults(out var enemyColliderSettings, prefabPhysicsCollider, enemySettings);
+                    colliderDefaults[entityInQueryIndex] = enemyColliderSettings;
+                    collidersCacheSizes[entityInQueryIndex] = CalculateCollidersCacheSize(enemySettings);
+
+                    randomArray[nativeThreadIndex] = random;
                 })
-                .ScheduleParallel();
+                .ScheduleParallel(combinedJobHandle);
 
             _beginSimulationEntityCommandBufferSystem.AddJobHandleForProducer(Dependency);
+
+            Dependency.Complete();
+
+            unsafe
+            {
+                var colliderCachesSize = CalculateColliderCachesSize(
+                    (int*)collidersCacheSizes.GetUnsafeReadOnlyPtr(), collidersCacheSizes.Length);
+
+                var colliderCaches =
+                    new NativeArray<BlobAssetReference<Collider>>(colliderCachesSize, Allocator.Persistent);
+
+                FillColliderCaches(
+                    (int*)collidersCacheSizes.GetUnsafeReadOnlyPtr(), collidersCacheSizes.Length,
+                    (ColliderDefaults*)colliderDefaults.GetUnsafeReadOnlyPtr(),
+                    (BlobAssetReference<Collider>*)colliderCaches.GetUnsafeReadOnlyPtr());
+
+                ColliderCaches = colliderCaches;
+            }
+
+            ColliderCacheSizes = collidersCacheSizes;
+
+            colliderDefaults.Dispose();
+        }
+
+        [BurstCompile]
+        private static unsafe int CalculateColliderCachesSize(int* collidersCacheSizes, int spawnsCount)
+        {
+            var colliderCachesSize = 0;
+            for (var i = 0; i < spawnsCount; i++)
+                colliderCachesSize += collidersCacheSizes[i];
+
+            return colliderCachesSize;
+        }
+
+        [BurstCompile]
+        private static unsafe void FillColliderCaches(
+            int* collidersCacheSizes, int spawnsCount,
+            ColliderDefaults* colliderDefaults,
+            BlobAssetReference<Collider>* colliderCaches)
+        {
+            var collidersCacheOffset = 0;
+            for (var i = 0; i < spawnsCount; i++)
+            {
+                var defaults = colliderDefaults[i];
+
+                var size = collidersCacheSizes[i];
+                var scale = defaults.DefaultScale;
+                var step = defaults.ScaleStep / 100f;
+                for (var j = collidersCacheOffset; j < collidersCacheOffset + size; j++)
+                {
+                    var capsuleGeometry = new CapsuleGeometry
+                    {
+                        Radius = defaults.CapsuleDefaultRadius * scale,
+                        Vertex0 = defaults.CapsuleDefaultVertex0 * scale,
+                        Vertex1 = defaults.CapsuleDefaultVertex1 * scale
+                    };
+
+                    var material = new Material { CollisionResponse = CollisionResponsePolicy.RaiseTriggerEvents };
+                    colliderCaches[j] = CapsuleCollider.Create(capsuleGeometry, CollisionFilter.Default, material);
+
+                    scale += step;
+                }
+
+                collidersCacheOffset += size;
+            }
         }
 
         [BurstCompile]
@@ -82,13 +186,11 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
             beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity, new NonUniformScale
                 { Value = new float3(battleGroundScale, battleGroundSettings.YScale, battleGroundScale) });
 
-            beginSimulationCommandBuffer.AddComponent<BattleGroundScale>(entityInQueryIndex, entity);
-            beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity,
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
                 new BattleGroundScale { Value = battleGroundScale });
 
-            beginSimulationCommandBuffer.AddComponent<URPMaterialPropertyBaseColor>(entityInQueryIndex, entity);
             var color = new float4(random.NextFloat3(), 1f);
-            beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity,
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
                 new URPMaterialPropertyBaseColor { Value = color });
         }
 
@@ -141,18 +243,71 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
             beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity,
                 new Translation { Value = enemyPosition });
 
-            beginSimulationCommandBuffer.AddComponent<EnemyMovementSpeed>(entityInQueryIndex, entity);
-            beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity, new EnemyMovementSpeed
-                { Value = random.NextFloat(enemySettings.SpeedRange.x, enemySettings.SpeedRange.y) });
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity, new EnemyMovementSpeed
+            {
+                Value = random.NextFloat(enemySettings.SpeedRange.x, enemySettings.SpeedRange.y),
+            });
 
-            beginSimulationCommandBuffer.AddComponent<URPMaterialPropertyBaseColor>(entityInQueryIndex, entity);
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
+                new Scale { Value = enemySettings.Scale });
+
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
+                new EnemySpawnId { Value = entityInQueryIndex });
+
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
+                new EnemyGrowth { Step = enemySettings.GrowthStep, Limit = enemySettings.GrowthLimit });
+
             var alpha = random.NextFloat(enemySettings.TransparencyRange.x, enemySettings.TransparencyRange.y);
             var color = new float4(random.NextFloat3(), alpha);
-            beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity,
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
                 new URPMaterialPropertyBaseColor { Value = color });
         }
 
         [BurstCompile]
+        private static unsafe void CreateColliderDefaults(
+            out ColliderDefaults colliderDefaults,
+            in PhysicsCollider prefabCollider,
+            in EnemySettings enemySettings)
+        {
+            var colliderPtr = (CapsuleCollider*)prefabCollider.ColliderPtr;
+            colliderDefaults = new ColliderDefaults
+            {
+                CapsuleDefaultRadius = colliderPtr->Radius,
+                CapsuleDefaultVertex0 = colliderPtr->Vertex0,
+                CapsuleDefaultVertex1 = colliderPtr->Vertex1,
+                DefaultScale = enemySettings.Scale,
+                ScaleStep = enemySettings.GrowthStep
+            };
+        }
+
+        [BurstCompile]
+        private static int CalculateCollidersCacheSize(in EnemySettings enemySettings)
+        {
+            var min = enemySettings.Scale;
+            var max = enemySettings.GrowthLimit;
+            var step = enemySettings.GrowthStep / 100f;
+            return (int)math.round((max - min) / step) + 1;
+        }
+
+        [BurstCompile]
         protected override void OnUpdate() { }
+
+        [BurstCompile]
+        protected override void OnDestroy()
+        {
+            if (ColliderCacheSizes.IsCreated)
+                ColliderCacheSizes.Dispose();
+
+            if (ColliderCaches.IsCreated)
+            {
+                for (var i = 0; i < ColliderCaches.Length; i++)
+                {
+                    if(ColliderCaches[i].IsCreated)
+                        ColliderCaches[i].Dispose();
+                }
+
+                ColliderCaches.Dispose();
+            }
+        }
     }
 }

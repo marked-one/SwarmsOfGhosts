@@ -389,7 +389,6 @@ GameObject:
   - component: {fileID: 702590817361849441}
   - component: {fileID: 1285872874401740582}
   - component: {fileID: 620011020015919914}
-  - component: {fileID: 1107827205155910579}
   - component: {fileID: 4852910745139511032}
   m_Layer: 0
   m_Name: RightEye
@@ -461,19 +460,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &1107827205155910579
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8389039090328348065}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4852910745139511032
 MonoBehaviour:
   m_ObjectHideFlags: 0
