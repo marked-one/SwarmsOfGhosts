@@ -26,24 +26,19 @@ namespace SwarmsOfGhosts.Gameplay.Player
         [BurstCompile]
         protected override void OnStartRunning()
         {
-            var random = _randomSystem.MainThreadRandom;
-
             var beginSimulationCommandBuffer =
                 _beginSimulationEntityCommandBufferSystem
                     .CreateCommandBuffer()
                     .AsParallelWriter();
 
+            var random = _randomSystem.MainThreadRandom;
             var color = new float4(random.NextFloat3(), 1.0f);
+            _randomSystem.MainThreadRandom = random;
 
             Entities
-                .ForEach((
-                    int nativeThreadIndex,
-                    int entityInQueryIndex,
-                    Entity entity,
-                    in PlayerEyeTag playerEyeTag) =>
+                .ForEach((int nativeThreadIndex, int entityInQueryIndex, Entity entity, in PlayerEyeTag playerEyeTag) =>
                 {
-                    beginSimulationCommandBuffer.AddComponent<URPMaterialPropertyBaseColor>(entityInQueryIndex, entity);
-                    beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity,
+                    beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
                         new URPMaterialPropertyBaseColor { Value = color });
                 })
                 .ScheduleParallel();

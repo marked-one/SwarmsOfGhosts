@@ -1,4 +1,6 @@
-﻿using Unity.Burst;
+﻿using SwarmsOfGhosts.Gameplay.Player;
+using SwarmsOfGhosts.Gameplay.Utilities;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -6,6 +8,8 @@ using Unity.Transforms;
 namespace SwarmsOfGhosts.Gameplay.Projectile
 {
     [BurstCompile]
+    [UpdateInGroup(typeof(TransformSystemGroup))]
+    [UpdateAfter(typeof(PlayerMovementSystem))]
     public partial class ProjectileMovementSystem : SystemBase
     {
         private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
@@ -39,8 +43,10 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
 
                 var path = translation.Value - startPosition.Value;
                 var distance = math.length(path);
-                if (distance > destroyDistance.Value)
-                    endSimulationCommandBuffer.DestroyEntity(entityInQueryIndex, entity);
+                if (distance <= destroyDistance.Value)
+                    return;
+
+                endSimulationCommandBuffer.AddComponent<DestroyTag>(entityInQueryIndex, entity);
             }).ScheduleParallel();
 
             _endSimulationEntityCommandBufferSystem.AddJobHandleForProducer(Dependency);

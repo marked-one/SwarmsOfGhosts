@@ -28,7 +28,7 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
 
             _battleGroundQuery = GetEntityQuery(
                 ComponentType.ReadOnly<Translation>(),
-                ComponentType.ReadOnly<BattleGroundScale>());
+                ComponentType.ReadOnly<BattleGroundScale>()); ;
         }
 
         [BurstCompile]
@@ -138,19 +138,13 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
             beginSimulationCommandBuffer.SetComponent(
                 entityInQueryIndex, entity, new Rotation { Value = worldRotation });
 
-            beginSimulationCommandBuffer.AddComponent<ProjectileStartPosition>(entityInQueryIndex, entity);
-
-            beginSimulationCommandBuffer.SetComponent(
+            beginSimulationCommandBuffer.AddComponent(
                 entityInQueryIndex, entity, new ProjectileStartPosition { Value = worldPosition });
 
-            beginSimulationCommandBuffer.AddComponent<ProjectileSpeed>(entityInQueryIndex, entity);
-
-            beginSimulationCommandBuffer.SetComponent(
+            beginSimulationCommandBuffer.AddComponent(
                 entityInQueryIndex, entity, new ProjectileSpeed { Value = settings.Speed });
 
-            beginSimulationCommandBuffer.AddComponent<ProjectileDestroyDistance>(entityInQueryIndex, entity);
-
-            beginSimulationCommandBuffer.SetComponent(
+            beginSimulationCommandBuffer.AddComponent(
                 entityInQueryIndex, entity, new ProjectileDestroyDistance { Value = settings.DestroyDistance });
         }
     }

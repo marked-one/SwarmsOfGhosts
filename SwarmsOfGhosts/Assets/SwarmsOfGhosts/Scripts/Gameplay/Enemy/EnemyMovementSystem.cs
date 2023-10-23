@@ -8,6 +8,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
 {
     [BurstCompile]
     [UpdateInGroup(typeof(TransformSystemGroup))]
+    [UpdateAfter(typeof(PlayerMovementSystem))]
     public partial class EnemyMovementSystem : SystemBase
     {
         private Entity _player;

@@ -11,12 +11,12 @@ namespace SwarmsOfGhosts.Gameplay.Utilities
     public partial class RandomSystem : SystemBase
     {
         public NativeArray<Random> RandomArray { get; private set; }
-        public Random MainThreadRandom;
+        public Random MainThreadRandom { get; set; }
 
         [BurstCompile]
         protected override void OnCreate()
         {
-            var maxJobThreadCount = JobsUtility.MaxJobThreadCount;
+            const int maxJobThreadCount = JobsUtility.MaxJobThreadCount;
             var randomArray = new Random[maxJobThreadCount];
             var seed = new System.Random();
             MainThreadRandom = new Random((uint)seed.Next(1, int.MaxValue));
