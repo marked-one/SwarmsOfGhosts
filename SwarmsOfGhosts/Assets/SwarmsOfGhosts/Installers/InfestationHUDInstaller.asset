@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2cdd56be682014549afed09093b80c7d, type: 3}
-  m_Name: HUDInstaller
+  m_Script: {fileID: 11500000, guid: 5790b59383244fe3b9625b27b1e73d99, type: 3}
+  m_Name: InfestationHUDInstaller
   m_EditorClassIdentifier: 
-  _playerHealthViewPrefab: {fileID: -1242931104043379204, guid: 8ef5c96e3b93e944cb59f21cb3d58fc5, type: 3}
+  _infestationViewPrefab: {fileID: 6239145121047986285, guid: 28de8b439d552b945969bb01e0754405, type: 3}

@@ -1,9 +1,9 @@
-﻿using SwarmsOfGhosts.Gameplay.Utilities;
+﻿using SwarmsOfGhosts.Gameplay.Facades;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI
+namespace SwarmsOfGhosts.UI.HUD.Player
 {
     public interface IPlayerHealthViewModel
     {
@@ -21,11 +21,11 @@ namespace SwarmsOfGhosts.UI
         private PlayerHealthViewModel(IPlayerHealth playerHealth)
         {
             var maxPlayerHealth = 0f;
-            playerHealth.MaxPlayerHealth
+            playerHealth.Max
                 .Subscribe(value => { maxPlayerHealth = value; })
                 .AddTo(_dependencies);
 
-            playerHealth.PlayerHealth
+            playerHealth.Current
                 .Subscribe(value =>
                 {
                     _playerHealth.Value = Mathf.Approximately(maxPlayerHealth, 0f) ? 1f : value / maxPlayerHealth;
