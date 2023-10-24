@@ -1,3 +1,4 @@
+using SwarmsOfGhosts.Gameplay.Enemy;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -9,6 +10,13 @@ namespace SwarmsOfGhosts.Gameplay.Player
     [UpdateInGroup(typeof(TransformSystemGroup))]
     public partial class PlayerMovementSystem : SystemBase
     {
+        [BurstCompile]
+        protected override void OnCreate()
+        {
+            var enemyQuery = GetEntityQuery(ComponentType.ReadOnly<EnemyTag>());
+            RequireForUpdate(enemyQuery);
+        }
+
         [BurstCompile]
         protected override void OnUpdate()
         {

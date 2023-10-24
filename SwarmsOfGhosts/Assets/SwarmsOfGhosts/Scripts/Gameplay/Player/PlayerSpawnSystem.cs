@@ -66,8 +66,11 @@ namespace SwarmsOfGhosts.Gameplay.Player
             beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity,
                 new Translation { Value = spawnTranslation.Value });
 
-            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity, new PlayerMovementSpeed
-                { Value = playerSettings.Speed });
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
+                new PlayerMovementSpeed { Value = playerSettings.Speed });
+
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
+                new PlayerHealth { Value = playerSettings.Health, Max = playerSettings.Health });
 
             beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
                 new URPMaterialPropertyBaseColor { Value = new float4(random.NextFloat3(), 1.0f) });

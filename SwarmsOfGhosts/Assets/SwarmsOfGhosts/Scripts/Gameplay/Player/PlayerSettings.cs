@@ -6,5 +6,6 @@ namespace SwarmsOfGhosts.Gameplay.Player
     public struct PlayerSettings : IComponentData
     {
         public float Speed;
+        public float Health;
     }
 }

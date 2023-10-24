@@ -11,5 +11,8 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         public float Scale;
         public int GrowthStep;
         public float GrowthLimit;
+        public float Health;
+        public float Damage;
+        public float DamageCooldown;
     }
 }

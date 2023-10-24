@@ -257,6 +257,12 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
             beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
                 new EnemyGrowth { Step = enemySettings.GrowthStep, Limit = enemySettings.GrowthLimit });
 
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
+                new EnemyHealth { Value = enemySettings.Health });
+
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
+                new EnemyDamage { Value = enemySettings.Damage, Cooldown = enemySettings.DamageCooldown });
+
             var alpha = random.NextFloat(enemySettings.TransparencyRange.x, enemySettings.TransparencyRange.y);
             var color = new float4(random.NextFloat3(), alpha);
             beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,

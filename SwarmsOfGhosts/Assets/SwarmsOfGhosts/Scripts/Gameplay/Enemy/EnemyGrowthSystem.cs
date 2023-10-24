@@ -49,6 +49,9 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
                 EnemyGroup = GetComponentDataFromEntity<EnemyTag>(true),
                 SpawnIdGroup = GetComponentDataFromEntity<EnemySpawnId>(true),
                 GrowthGroup = GetComponentDataFromEntity<EnemyGrowth>(true),
+                DestroyGroup = GetComponentDataFromEntity<DestroyTag>(true),
+                HealthGroup = GetComponentDataFromEntity<EnemyHealth>(),
+                DamageGroup = GetComponentDataFromEntity<EnemyDamage>(),
                 ScaleGroup = GetComponentDataFromEntity<Scale>(),
                 ColliderGroup = GetComponentDataFromEntity<PhysicsCollider>(),
                 ColorGroup = GetComponentDataFromEntity<URPMaterialPropertyBaseColor>(),
@@ -69,7 +72,10 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
             [ReadOnly] public ComponentDataFromEntity<EnemyTag> EnemyGroup;
             [ReadOnly] public ComponentDataFromEntity<EnemySpawnId> SpawnIdGroup;
             [ReadOnly] public ComponentDataFromEntity<EnemyGrowth> GrowthGroup;
+            [ReadOnly] public ComponentDataFromEntity<DestroyTag> DestroyGroup;
 
+            public ComponentDataFromEntity<EnemyHealth> HealthGroup;
+            public ComponentDataFromEntity<EnemyDamage> DamageGroup;
             public ComponentDataFromEntity<Scale> ScaleGroup;
             public ComponentDataFromEntity<PhysicsCollider> ColliderGroup;
             public ComponentDataFromEntity<URPMaterialPropertyBaseColor> ColorGroup;
@@ -118,12 +124,23 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
                     ColliderGroup[entityToGrow] = physicsCollider;
                 }
 
+                var healthOfGrowingEntity = HealthGroup[entityToGrow];
+                var healthOfDestroyedEntity = HealthGroup[entityToDestroy];
+                healthOfGrowingEntity.Value += healthOfDestroyedEntity.Value;
+                HealthGroup[entityToGrow] = healthOfGrowingEntity;
+
+                var damageOfGrowingEntity = DamageGroup[entityToGrow];
+                var damageOfDestroyedEntity = DamageGroup[entityToDestroy];
+                damageOfGrowingEntity.Value += damageOfDestroyedEntity.Value;
+                DamageGroup[entityToGrow] = damageOfGrowingEntity;
+
                 var random = CreateRandom(Seed, triggerEvent.BodyIndexA, triggerEvent.BodyIndexB);
                 var color = ColorGroup[entityToGrow];
                 ChangeMaterialColor(ref color, ref random);
                 ColorGroup[entityToGrow] = color;
 
-                EndSimulationCommandBuffer.AddComponent<DestroyTag>(entityToDestroy);
+                if (!DestroyGroup.HasComponent(entityToDestroy))
+                    EndSimulationCommandBuffer.AddComponent<DestroyTag>(entityToDestroy);
             }
 
             [BurstCompile]
