@@ -1,23 +1,23 @@
-using SwarmsOfGhosts.Gameplay.Utilities;
+using SwarmsOfGhosts.Gameplay.Facades;
 using Unity.Entities;
 using UnityEngine;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI
+namespace SwarmsOfGhosts.UI.HUD.Player
 {
-    [CreateAssetMenu(fileName = "HUDInstaller", menuName = "Installers/HUDInstaller")]
-    public class HUDInstaller : ScriptableObjectInstaller<HUDInstaller>
+    [CreateAssetMenu(fileName = "PlayerHealthHUDInstaller", menuName = "Installers/PlayerHealthHUDInstaller")]
+    public class PlayerHealthHUDInstaller : ScriptableObjectInstaller<PlayerHealthHUDInstaller>
     {
         [SerializeField] private PlayerHealthView _playerHealthViewPrefab;
 
         public override void InstallBindings()
         {
             var world = World.DefaultGameObjectInjectionWorld;
-            var playerHealthListener = world.GetOrCreateSystem<PlayerHealthFacade>();
+            var playerHealthFacade = world.GetOrCreateSystem<PlayerHealthFacade>();
 
             Container
                 .Bind<IPlayerHealth>()
-                .FromInstance(playerHealthListener)
+                .FromInstance(playerHealthFacade)
                 .AsSingle();
 
             Container

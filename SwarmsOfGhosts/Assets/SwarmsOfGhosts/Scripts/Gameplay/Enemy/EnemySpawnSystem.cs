@@ -258,7 +258,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
                 new EnemyGrowth { Step = enemySettings.GrowthStep, Limit = enemySettings.GrowthLimit });
 
             beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
-                new EnemyHealth { Value = enemySettings.Health });
+                new EnemyHealth { Value = enemySettings.Health, Max = enemySettings.Health });
 
             beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
                 new EnemyDamage { Value = enemySettings.Damage, Cooldown = enemySettings.DamageCooldown });
