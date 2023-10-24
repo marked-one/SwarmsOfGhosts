@@ -9,5 +9,6 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
         public float SpawnInterval;
         public float Speed;
         public float DestroyDistance;
+        public float Damage;
     }
 }

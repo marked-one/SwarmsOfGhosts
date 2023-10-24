@@ -31,23 +31,28 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
                     .CreateCommandBuffer()
                     .AsParallelWriter();
 
-            Entities.ForEach((
-                Entity entity, int entityInQueryIndex,
-                ref Translation translation, in Rotation rotation,
-                in ProjectileStartPosition startPosition,
-                in ProjectileSpeed speed,
-                in ProjectileDestroyDistance destroyDistance) =>
-            {
-                var forward = math.normalize(math.forward(rotation.Value));
-                translation.Value.xz += forward.xz * speed.Value * deltaTime;
+            var destroyGroup = GetComponentDataFromEntity<DestroyTag>(true);
+            Entities
+                .WithReadOnly(destroyGroup)
+                .ForEach((
+                    Entity entity, int entityInQueryIndex,
+                    ref Translation translation, in Rotation rotation,
+                    in ProjectileStartPosition startPosition,
+                    in ProjectileSpeed speed,
+                    in ProjectileDestroyDistance destroyDistance) =>
+                {
+                    var forward = math.normalize(math.forward(rotation.Value));
+                    translation.Value.xz += forward.xz * speed.Value * deltaTime;
 
-                var path = translation.Value - startPosition.Value;
-                var distance = math.length(path);
-                if (distance <= destroyDistance.Value)
-                    return;
+                    var path = translation.Value - startPosition.Value;
+                    var distance = math.length(path);
+                    if (distance <= destroyDistance.Value)
+                        return;
 
-                endSimulationCommandBuffer.AddComponent<DestroyTag>(entityInQueryIndex, entity);
-            }).ScheduleParallel();
+                    if (!destroyGroup.HasComponent(entity))
+                        endSimulationCommandBuffer.AddComponent<DestroyTag>(entityInQueryIndex, entity);
+                })
+                .ScheduleParallel();
 
             _endSimulationEntityCommandBufferSystem.AddJobHandleForProducer(Dependency);
         }

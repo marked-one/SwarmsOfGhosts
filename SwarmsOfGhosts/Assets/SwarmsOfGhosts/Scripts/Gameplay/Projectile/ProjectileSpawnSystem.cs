@@ -1,3 +1,4 @@
+using SwarmsOfGhosts.Gameplay.Enemy;
 using SwarmsOfGhosts.Gameplay.Environment;
 using Unity.Burst;
 using Unity.Collections;
@@ -28,7 +29,10 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
 
             _battleGroundQuery = GetEntityQuery(
                 ComponentType.ReadOnly<Translation>(),
-                ComponentType.ReadOnly<BattleGroundScale>()); ;
+                ComponentType.ReadOnly<BattleGroundScale>());
+
+            var enemyQuery = GetEntityQuery(ComponentType.ReadOnly<EnemyTag>());
+            RequireForUpdate(enemyQuery);
         }
 
         [BurstCompile]
@@ -64,7 +68,6 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
             jobHandles[1] = battleGroundJobHandle;
             jobHandles[2] = battleGroundTranslationsJobHandle;
             jobHandles[3] = battleGroundScalesJobHandle;
-
             var combinedJobHandle = JobHandle.CombineDependencies(jobHandles);
 
             var deltaTime = Time.DeltaTime;
@@ -146,6 +149,9 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
 
             beginSimulationCommandBuffer.AddComponent(
                 entityInQueryIndex, entity, new ProjectileDestroyDistance { Value = settings.DestroyDistance });
+
+            beginSimulationCommandBuffer.AddComponent(
+                entityInQueryIndex, entity, new ProjectileDamage() { Value = settings.Damage });
         }
     }
 }

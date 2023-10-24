@@ -1,9 +1,10 @@
-﻿using Unity.Burst;
+﻿using SwarmsOfGhosts.Gameplay.Player;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace SwarmsOfGhosts.Gameplay.Player
+namespace SwarmsOfGhosts.Gameplay.PlayerCamera
 {
     [BurstCompile]
     [UpdateAfter(typeof(TransformSystemGroup))]
@@ -12,13 +13,17 @@ namespace SwarmsOfGhosts.Gameplay.Player
         private Transform _cameraRoot;
         private Entity _player;
 
+        private Camera _camera;
+
+        public void Construct(Camera camera) => _camera = camera;
+
         [BurstCompile]
         protected override void OnCreate() => RequireSingletonForUpdate<PlayerTag>();
 
         [BurstCompile]
         protected override void OnStartRunning()
         {
-            _cameraRoot = Camera.main.transform.parent;
+            _cameraRoot = _camera.transform.parent;
             _player = GetSingletonEntity<PlayerTag>();
         }
 

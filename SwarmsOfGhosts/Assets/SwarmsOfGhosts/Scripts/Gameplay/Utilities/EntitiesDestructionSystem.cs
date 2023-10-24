@@ -11,7 +11,7 @@ namespace SwarmsOfGhosts.Gameplay.Utilities
     // 3. BeginSimulationCommandBuffer then executes on the same frame.
 
     [BurstCompile]
-    [UpdateInGroup(typeof(InitializationSystemGroup ))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial class EntitiesDestructionSystem : SystemBase
     {
         private BeginSimulationEntityCommandBufferSystem _beginSimulationEntityCommandBufferSystem;
