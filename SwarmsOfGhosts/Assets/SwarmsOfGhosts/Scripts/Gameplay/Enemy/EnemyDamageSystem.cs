@@ -22,8 +22,6 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         private StepPhysicsWorld _stepPhysicsWorld;
         private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
 
-        private Entity _player;
-
         [BurstCompile]
         protected override void OnCreate()
         {
@@ -34,9 +32,6 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
             RequireSingletonForUpdate<IsPlayingTag>();
             RequireSingletonForUpdate<PlayerTag>();
         }
-
-        [BurstCompile]
-        protected override void OnStartRunning() => _player = GetSingletonEntity<PlayerTag>();
 
         [BurstCompile]
         protected override void OnUpdate()
@@ -53,7 +48,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
                 DestroyGroup = GetComponentDataFromEntity<DestroyTag>(true),
                 EnemyHealthGroup = GetComponentDataFromEntity<EnemyHealth>(),
                 PlayerHealthGroup = GetComponentDataFromEntity<PlayerHealth>(),
-                Player = _player,
+                Player = GetSingletonEntity<PlayerTag>(),
                 EndSimulationCommandBuffer = endSimulationCommandBuffer
             }.Schedule(_stepPhysicsWorld.Simulation, Dependency);
 
@@ -116,8 +111,5 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
                     EndSimulationCommandBuffer.AddComponent<DestroyTag>(enemy);
             }
         }
-
-        [BurstCompile]
-        protected override void OnStopRunning() => _player = Entity.Null;
     }
 }

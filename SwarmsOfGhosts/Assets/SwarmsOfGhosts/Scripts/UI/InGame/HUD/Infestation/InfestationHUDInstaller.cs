@@ -1,5 +1,5 @@
 using SwarmsOfGhosts.Gameplay.Enemy;
-using SwarmsOfGhosts.UI.HUD.Player;
+using SwarmsOfGhosts.UI.InGame.HUD.Player;
 using Unity.Entities;
 using UnityEngine;
 using Zenject;

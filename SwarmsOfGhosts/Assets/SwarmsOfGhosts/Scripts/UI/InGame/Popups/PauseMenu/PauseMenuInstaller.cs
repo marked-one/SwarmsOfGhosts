@@ -3,7 +3,7 @@ using Unity.Entities;
 using UnityEngine;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI.HUD.PauseMenu
+namespace SwarmsOfGhosts.UI.InGame.Popups.PauseMenu
 {
     [CreateAssetMenu(fileName = "PauseMenuInstaller", menuName = "Installers/PauseMenuInstaller")]
     public class PauseMenuInstaller : ScriptableObjectInstaller<PauseMenuInstaller>

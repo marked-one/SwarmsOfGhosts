@@ -3,7 +3,7 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI.HUD.Player
+namespace SwarmsOfGhosts.UI.InGame.HUD.Player
 {
     public interface IPlayerHealthViewModel
     {

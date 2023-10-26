@@ -2,7 +2,7 @@
 using UniRx;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI.HUD.PauseMenu
+namespace SwarmsOfGhosts.UI.InGame.Popups.PauseMenu
 {
     public interface IPauseMenuViewModel
     {

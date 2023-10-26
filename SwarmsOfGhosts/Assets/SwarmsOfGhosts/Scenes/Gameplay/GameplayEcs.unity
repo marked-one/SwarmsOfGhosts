@@ -427,7 +427,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61667f35eef4352b8593d908d090ab4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GridDimensionSize: 10
+  GridDimensionSize: 5
   Spread: 10
   HeadroomInCenter: 15
   Prefab: {fileID: 7836703176674702157, guid: c0662a04c76e38040a6f5aa13563245c, type: 3}

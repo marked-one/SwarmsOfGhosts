@@ -175,19 +175,23 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
         [BurstCompile]
         protected override void OnStopRunning()
         {
-            Entities
-                .WithStructuralChanges()
-                .ForEach((Entity entity, in ProjectileTag _) => EntityManager.DestroyEntity(entity))
-                .Run();
+            var endSimulationCommandBuffer =
+                _endSimulationEntityCommandBufferSystem
+                    .CreateCommandBuffer()
+                    .AsParallelWriter();
 
-            Entities
-                .WithStructuralChanges()
-                .ForEach((Entity entity, in ProjectileSpawnTag _) =>
-                {
-                    EntityManager.RemoveComponent<ProjectileSpawnTimer>(entity);
-                    EntityManager.RemoveComponent<ProjectileSpawnCounter>(entity);
-                })
-                .Run();
+            Entities.ForEach((Entity entity, int entityInQueryIndex, in ProjectileTag _) =>
+            {
+                endSimulationCommandBuffer.DestroyEntity(entityInQueryIndex, entity);
+            }).ScheduleParallel();
+
+            Entities.ForEach((Entity entity, int entityInQueryIndex, in ProjectileSpawnTag _) =>
+            {
+                endSimulationCommandBuffer.RemoveComponent<ProjectileSpawnTimer>(entityInQueryIndex, entity);
+                endSimulationCommandBuffer.RemoveComponent<ProjectileSpawnCounter>(entityInQueryIndex, entity);
+            }).ScheduleParallel();
+
+            _endSimulationEntityCommandBufferSystem.AddJobHandleForProducer(Dependency);
         }
     }
 }
