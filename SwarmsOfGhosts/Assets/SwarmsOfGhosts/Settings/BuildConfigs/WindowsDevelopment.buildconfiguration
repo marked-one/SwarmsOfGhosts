@@ -24,6 +24,10 @@
             "ProductName": "Swarms Of Ghosts Development",
             "CompanyName": "Vladimir Klubkov",
             "Version": "0.1"
+        },
+        {
+            "$type": "Unity.Build.Common.EnableScriptDebugging, Unity.Build",
+            "WaitForManagedDebugger": true
         }
     ]
 }

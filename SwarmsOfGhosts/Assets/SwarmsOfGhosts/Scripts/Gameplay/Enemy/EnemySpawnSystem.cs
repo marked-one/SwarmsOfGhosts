@@ -1,4 +1,5 @@
 ﻿using SwarmsOfGhosts.Gameplay.Environment;
+using SwarmsOfGhosts.Gameplay.Restart;
 using SwarmsOfGhosts.Gameplay.Utilities;
 using Unity.Burst;
 using Unity.Collections;
@@ -40,7 +41,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         [BurstCompile]
         protected override void OnCreate()
         {
-            _randomSystem = World.GetExistingSystem<RandomSystem>();
+            _randomSystem = World.GetOrCreateSystem<RandomSystem>();
 
             _beginSimulationEntityCommandBufferSystem =
                 World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();
@@ -48,20 +49,22 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
             _spawnsQuery = GetEntityQuery(
                 ComponentType.ReadOnly<EnemySettings>(),
                 ComponentType.ReadOnly<EnemySpawnTag>());
+
+            RequireSingletonForUpdate<IsPlayingTag>();
         }
 
         [BurstCompile]
         protected override void OnStartRunning()
         {
-            var spawnEntities = _spawnsQuery.ToEntityArrayAsync(Allocator.TempJob, out var spawnEntitiesJobHandle);
+            var spawnEntities = _spawnsQuery.ToEntityArrayAsync(Allocator.TempJob, out var spawnEntitiesJob);
             var colliderDefaults = new NativeArray<ColliderDefaults>(spawnEntities.Length, Allocator.Persistent);
             var collidersCacheSizes = new NativeArray<int>(spawnEntities.Length, Allocator.Persistent);
             spawnEntities.Dispose();
 
-            var jobHandles = new NativeArray<JobHandle>(3, Allocator.Temp);
-            jobHandles[0] = Dependency;
-            jobHandles[1] = spawnEntitiesJobHandle;
-            var combinedJobHandle = JobHandle.CombineDependencies(jobHandles);
+            var jobs = new NativeArray<JobHandle>(3, Allocator.Temp);
+            jobs[0] = Dependency;
+            jobs[1] = spawnEntitiesJob;
+            var combinedJobs = JobHandle.CombineDependencies(jobs);
 
             var beginSimulationCommandBuffer =
                 _beginSimulationEntityCommandBufferSystem
@@ -78,7 +81,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
                     in EnemySpawnSettings enemySpawnSettings,
                     in EnemySettings enemySettings,
                     in BattleGroundSettings battleGroundSettings,
-                    in EnemySpawnTag enemySpawnTag) =>
+                    in EnemySpawnTag _) =>
                 {
                     var enemyGridDimensionSize = enemySpawnSettings.GridDimensionSize;
                     var enemySpread = enemySpawnSettings.Spread;
@@ -98,7 +101,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
 
                     randomArray[nativeThreadIndex] = random;
                 })
-                .ScheduleParallel(combinedJobHandle);
+                .ScheduleParallel(combinedJobs);
 
             _beginSimulationEntityCommandBufferSystem.AddJobHandleForProducer(Dependency);
 
@@ -169,14 +172,13 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         }
 
         [BurstCompile]
-        private static void InstantiateBattleGround(
-            int entityInQueryIndex,
+        private static void InstantiateBattleGround(int entityInQueryIndex,
             ref EntityCommandBuffer.ParallelWriter beginSimulationCommandBuffer,
-            in BattleGroundSettings battleGroundSettings,
-            in Translation enemySpawnTranslation,
+            in BattleGroundSettings battleGroundSettings, in Translation enemySpawnTranslation,
             int enemyGridDimensionSize, float enemySpread, ref Random random)
         {
             var entity = beginSimulationCommandBuffer.Instantiate(entityInQueryIndex, battleGroundSettings.Prefab);
+            beginSimulationCommandBuffer.SetName(entityInQueryIndex, entity, $"BattleGround {entityInQueryIndex}");
 
             var battleGroundPosition = new float3(enemySpawnTranslation.Value.x, 0f, enemySpawnTranslation.Value.z);
             beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity,
@@ -195,13 +197,11 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         }
 
         [BurstCompile]
-        private static void InstantiateEnemies(
-            int entityInQueryIndex,
+        private static void InstantiateEnemies(int entityInQueryIndex,
             ref EntityCommandBuffer.ParallelWriter beginSimulationCommandBuffer,
-            in Translation spawnTranslation,
-            in EnemySpawnSettings spawnSettings,
-            in EnemySettings enemySettings,
-            int enemyGridDimensionSize, float enemySpread, ref Random random)
+            in Translation spawnTranslation, in EnemySpawnSettings spawnSettings,
+            in EnemySettings enemySettings, int enemyGridDimensionSize, float enemySpread,
+            ref Random random)
         {
             var halfEnemyGridDimensionSize = enemyGridDimensionSize / 2;
             var lowerBound = -halfEnemyGridDimensionSize;
@@ -220,19 +220,17 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
                         continue;
 
                     InstantiateEnemy(entityInQueryIndex, ref beginSimulationCommandBuffer,
-                        spawnTranslation, spawnSettings, enemySettings, xOffset, zOffset, ref random);
+                        spawnTranslation, spawnSettings, enemySettings, xOffset, zOffset, i, j, ref random);
                 }
             }
         }
 
         [BurstCompile]
-        private static void InstantiateEnemy(
-            int entityInQueryIndex,
+        private static void InstantiateEnemy(int entityInQueryIndex,
             ref EntityCommandBuffer.ParallelWriter beginSimulationCommandBuffer,
-            in Translation spawnTranslation,
-            in EnemySpawnSettings spawnSettings,
-            in EnemySettings enemySettings,
-            float xOffset, float zOffset, ref Random random)
+            in Translation spawnTranslation, in EnemySpawnSettings spawnSettings,
+            in EnemySettings enemySettings, float xOffset, float zOffset,
+            int i, int j, ref Random random)
         {
             var enemyPosition = new float3(
                 spawnTranslation.Value.x + xOffset,
@@ -240,6 +238,8 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
                 spawnTranslation.Value.z + zOffset);
 
             var entity = beginSimulationCommandBuffer.Instantiate(entityInQueryIndex, spawnSettings.Prefab);
+            beginSimulationCommandBuffer.SetName(entityInQueryIndex, entity, $"Enemy {i} {j}");
+
             beginSimulationCommandBuffer.SetComponent(entityInQueryIndex, entity,
                 new Translation { Value = enemyPosition });
 
@@ -299,8 +299,18 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         protected override void OnUpdate() { }
 
         [BurstCompile]
-        protected override void OnDestroy()
+        protected override void OnStopRunning()
         {
+            Entities
+                .WithStructuralChanges()
+                .ForEach((Entity entity, in EnemyTag _) => EntityManager.DestroyEntity(entity))
+                .Run();
+
+            Entities
+                .WithStructuralChanges()
+                .ForEach((Entity entity, in BattleGroundTag _) => EntityManager.DestroyEntity(entity))
+                .Run();
+
             if (ColliderCacheSizes.IsCreated)
                 ColliderCacheSizes.Dispose();
 

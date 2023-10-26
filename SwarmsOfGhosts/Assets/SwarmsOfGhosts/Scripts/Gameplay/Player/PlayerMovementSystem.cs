@@ -1,4 +1,6 @@
 using SwarmsOfGhosts.Gameplay.Enemy;
+using SwarmsOfGhosts.Gameplay.Pause;
+using SwarmsOfGhosts.Gameplay.Restart;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -10,20 +12,29 @@ namespace SwarmsOfGhosts.Gameplay.Player
     [UpdateInGroup(typeof(TransformSystemGroup))]
     public partial class PlayerMovementSystem : SystemBase
     {
+        private PauseSystem _pauseSystem;
+
         [BurstCompile]
         protected override void OnCreate()
         {
+            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+
             var enemyQuery = GetEntityQuery(ComponentType.ReadOnly<EnemyTag>());
             RequireForUpdate(enemyQuery);
+
+            RequireSingletonForUpdate<IsPlayingTag>();
         }
 
         [BurstCompile]
         protected override void OnUpdate()
         {
+            if (_pauseSystem.IsPaused)
+                return;
+
             var deltaTime = Time.DeltaTime;
 
             Entities.ForEach((ref Translation translation, ref Rotation rotation,
-                in PlayerMovement movement, in PlayerMovementSpeed speed) =>
+                in PlayerMovement movement, in PlayerMovementSpeed speed, in PlayerTag _) =>
             {
                 translation.Value.xz += movement.Value * speed.Value * deltaTime;
                 if (math.length(movement.Value) > math.EPSILON)

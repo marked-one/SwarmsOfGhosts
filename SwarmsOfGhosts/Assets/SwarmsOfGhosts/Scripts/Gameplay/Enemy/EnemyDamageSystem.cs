@@ -1,5 +1,7 @@
-﻿using SwarmsOfGhosts.Gameplay.Player;
+﻿using SwarmsOfGhosts.Gameplay.Pause;
+using SwarmsOfGhosts.Gameplay.Player;
 using SwarmsOfGhosts.Gameplay.Projectile;
+using SwarmsOfGhosts.Gameplay.Restart;
 using SwarmsOfGhosts.Gameplay.Utilities;
 using Unity.Burst;
 using Unity.Collections;
@@ -16,6 +18,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
     [UpdateBefore(typeof(EnemyGrowthSystem))]
     public partial class EnemyDamageSystem : SystemBase
     {
+        private PauseSystem _pauseSystem;
         private StepPhysicsWorld _stepPhysicsWorld;
         private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
 
@@ -24,9 +27,11 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         [BurstCompile]
         protected override void OnCreate()
         {
+            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
             _stepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();
             _endSimulationEntityCommandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
+            RequireSingletonForUpdate<IsPlayingTag>();
             RequireSingletonForUpdate<PlayerTag>();
         }
 
@@ -36,6 +41,9 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         [BurstCompile]
         protected override void OnUpdate()
         {
+            if (_pauseSystem.IsPaused)
+                return;
+
             var endSimulationCommandBuffer = _endSimulationEntityCommandBufferSystem.CreateCommandBuffer();
             Dependency = new TriggerPhysicsEventsJob
             {

@@ -17,7 +17,7 @@ namespace SwarmsOfGhosts.UI.HUD.Player
         private void Start()
         {
             _viewModel.PlayerHealth
-                .Subscribe(value => { _healthBar.value = value; })
+                .Subscribe(value => _healthBar.value = value)
                 .AddTo(this);
         }
     }

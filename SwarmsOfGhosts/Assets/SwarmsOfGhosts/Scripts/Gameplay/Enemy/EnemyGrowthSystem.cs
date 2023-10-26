@@ -1,4 +1,6 @@
-﻿using SwarmsOfGhosts.Gameplay.Utilities;
+﻿using SwarmsOfGhosts.Gameplay.Pause;
+using SwarmsOfGhosts.Gameplay.Restart;
+using SwarmsOfGhosts.Gameplay.Utilities;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -18,6 +20,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
     [UpdateBefore(typeof(BuildPhysicsWorld))]
     public partial class EnemyGrowthSystem : SystemBase
     {
+        private PauseSystem _pauseSystem;
         private EnemySpawnSystem _spawnSystem;
         private RandomSystem _randomSystem;
         private StepPhysicsWorld _stepPhysicsWorld;
@@ -26,15 +29,21 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         [BurstCompile]
         protected override void OnCreate()
         {
+            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
             _spawnSystem = World.GetOrCreateSystem<EnemySpawnSystem>();
             _randomSystem = World.GetOrCreateSystem<RandomSystem>();
             _stepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();
             _endSimulationEntityCommandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+
+            RequireSingletonForUpdate<IsPlayingTag>();
         }
 
         [BurstCompile]
         protected override void OnUpdate()
         {
+            if (_pauseSystem.IsPaused)
+                return;
+
             var collidersCacheSizes = _spawnSystem.ColliderCacheSizes;
             var collidersCache = _spawnSystem.ColliderCaches;
             if (!collidersCacheSizes.IsCreated || !collidersCache.IsCreated)
