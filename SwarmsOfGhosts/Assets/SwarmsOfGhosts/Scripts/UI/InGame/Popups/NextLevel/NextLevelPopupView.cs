@@ -55,6 +55,11 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
                     .ContinueWith(() => _nextButton.enabled = true)
                     .Forget(Debug.LogException);
             });
+
+            _quitButton.onClick.AddListener(() =>
+            {
+                // TODO: Go to main menu
+            });
         }
 
         private void OnDestroy()
