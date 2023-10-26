@@ -14,6 +14,7 @@ namespace SwarmsOfGhosts.Gameplay.Player
     {
         private RandomSystem _randomSystem;
         private BeginSimulationEntityCommandBufferSystem _beginSimulationEntityCommandBufferSystem;
+        private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
 
         [BurstCompile]
         protected override void OnCreate()
@@ -22,6 +23,9 @@ namespace SwarmsOfGhosts.Gameplay.Player
 
             _beginSimulationEntityCommandBufferSystem =
                 World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();
+
+            _endSimulationEntityCommandBufferSystem =
+                World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
             RequireSingletonForUpdate<IsPlayingTag>();
         }
@@ -104,18 +108,23 @@ namespace SwarmsOfGhosts.Gameplay.Player
         [BurstCompile]
         protected override void OnStopRunning()
         {
-            Entities
-                .WithStructuralChanges()
-                .ForEach((Entity entity, in PlayerTag _) => EntityManager.DestroyEntity(entity))
-                .Run();
+            var endSimulationCommandBuffer =
+                _endSimulationEntityCommandBufferSystem
+                    .CreateCommandBuffer()
+                    .AsParallelWriter();
 
-            Entities
-                .WithStructuralChanges()
-                .ForEach((Entity entity, in PlayerSpawnTag _) =>
-                {
-                    EntityManager.RemoveComponent<PlayerSpawnCounter>(entity);
-                })
-                .Run();
+            Entities.ForEach((Entity entity, int entityInQueryIndex, in PlayerTag _) =>
+            {
+                endSimulationCommandBuffer.DestroyEntity(entityInQueryIndex, entity);
+            }).ScheduleParallel();
+
+
+            Entities.ForEach((Entity entity, int entityInQueryIndex, in PlayerSpawnTag _) =>
+            {
+                endSimulationCommandBuffer.RemoveComponent<PlayerSpawnCounter>(entityInQueryIndex, entity);
+            }).ScheduleParallel();
+
+            _endSimulationEntityCommandBufferSystem.AddJobHandleForProducer(Dependency);
         }
     }
 }

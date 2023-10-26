@@ -1,5 +1,4 @@
-﻿using SwarmsOfGhosts.UI;
-using UniRx;
+﻿using Cysharp.Threading.Tasks;
 using Unity.Burst;
 using Unity.Entities;
 
@@ -7,34 +6,44 @@ namespace SwarmsOfGhosts.Gameplay.Restart
 {
     public interface IRestartable
     {
-        public void Restart();
+        public UniTask Restart();
     }
 
     [BurstCompile]
     [UpdateInGroup(typeof(SimulationSystemGroup), OrderLast = true)]
     [UpdateAfter(typeof(EndSimulationEntityCommandBufferSystem))]
     [AlwaysUpdateSystem]
-    public partial class RestartableSystem : SystemBase, IRestartable
+    public partial class RestartFacadeSystem : SystemBase, IRestartable
     {
-        private bool _isRestarting;
-        private bool _shouldRestart;
+        private UniTaskCompletionSource _restartCompletionSource;
 
-        private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
+        private const int _framesForRestart = 1;
+        private int _framesCounter;
 
-        public void Restart() => _shouldRestart = true;
+        public async UniTask Restart()
+        {
+            _restartCompletionSource = new UniTaskCompletionSource();
+            await _restartCompletionSource.Task;
+            _restartCompletionSource = null;
+        }
 
         [BurstCompile]
         protected override void OnUpdate()
         {
-            if (!_shouldRestart)
+            if (_restartCompletionSource == null)
                 return;
 
-            _shouldRestart = false;
-            _isRestarting = !_isRestarting;
-            if (_isRestarting)
-                DestroyIsPlayingEntity();
-            else
+            DestroyIsPlayingEntity();
+
+            if (_framesCounter == _framesForRestart)
+            {
                 CreateIsPlayingEntity();
+                _framesCounter = 0;
+                _restartCompletionSource.TrySetResult();
+                return;
+            }
+
+            _framesCounter++;
         }
 
         private void CreateIsPlayingEntity()
@@ -55,10 +64,6 @@ namespace SwarmsOfGhosts.Gameplay.Restart
         }
 
         [BurstCompile]
-        protected override void OnStopRunning()
-        {
-            DestroyIsPlayingEntity();
-            _subscriptions.Dispose();
-        }
+        protected override void OnStopRunning() => _restartCompletionSource?.TrySetResult();
     }
 }

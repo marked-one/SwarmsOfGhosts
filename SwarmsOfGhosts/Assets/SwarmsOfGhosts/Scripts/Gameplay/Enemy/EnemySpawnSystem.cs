@@ -33,6 +33,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
 
         private RandomSystem _randomSystem;
         private BeginSimulationEntityCommandBufferSystem _beginSimulationEntityCommandBufferSystem;
+        private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
 
         private EntityQuery _spawnsQuery;
         public NativeArray<int> ColliderCacheSizes { get; private set; }
@@ -45,6 +46,9 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
 
             _beginSimulationEntityCommandBufferSystem =
                 World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();
+
+            _endSimulationEntityCommandBufferSystem =
+                World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
             _spawnsQuery = GetEntityQuery(
                 ComponentType.ReadOnly<EnemySettings>(),
@@ -301,15 +305,25 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         [BurstCompile]
         protected override void OnStopRunning()
         {
-            Entities
-                .WithStructuralChanges()
-                .ForEach((Entity entity, in EnemyTag _) => EntityManager.DestroyEntity(entity))
-                .Run();
+            var endSimulationCommandBuffer =
+                _endSimulationEntityCommandBufferSystem
+                    .CreateCommandBuffer()
+                    .AsParallelWriter();
 
-            Entities
-                .WithStructuralChanges()
-                .ForEach((Entity entity, in BattleGroundTag _) => EntityManager.DestroyEntity(entity))
-                .Run();
+            Entities.ForEach((Entity entity, int entityInQueryIndex, in EnemyTag _) =>
+            {
+                endSimulationCommandBuffer.DestroyEntity(entityInQueryIndex, entity);
+            }).ScheduleParallel();
+
+
+            Entities.ForEach((Entity entity, int entityInQueryIndex, in BattleGroundTag _) =>
+            {
+                endSimulationCommandBuffer.DestroyEntity(entityInQueryIndex, entity);
+            }).ScheduleParallel();
+
+            _endSimulationEntityCommandBufferSystem.AddJobHandleForProducer(Dependency);
+
+            Dependency.Complete();
 
             if (ColliderCacheSizes.IsCreated)
                 ColliderCacheSizes.Dispose();

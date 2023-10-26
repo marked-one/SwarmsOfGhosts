@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI.HUD.Player
+namespace SwarmsOfGhosts.UI.InGame.HUD.Player
 {
     public class PlayerHealthView : MonoBehaviour
     {

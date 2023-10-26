@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.cysharp.unitask": {
+      "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2.4.1",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "cfe509a55602ba5be6df7fa0468b10298b8a053d"
+    },
     "com.neuecc.unirx": {
       "version": "https://github.com/neuecc/UniRx.git?path=Assets/Plugins/UniRx/Scripts#284d5c50d3f1ddd9fa7df3d382ea904732a9c2ff",
       "depth": 0,

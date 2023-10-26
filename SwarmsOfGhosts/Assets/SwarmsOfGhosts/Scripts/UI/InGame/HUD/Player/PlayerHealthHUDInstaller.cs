@@ -3,7 +3,7 @@ using Unity.Entities;
 using UnityEngine;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI.HUD.Player
+namespace SwarmsOfGhosts.UI.InGame.HUD.Player
 {
     [CreateAssetMenu(fileName = "PlayerHealthHUDInstaller", menuName = "Installers/PlayerHealthHUDInstaller")]
     public class PlayerHealthHUDInstaller : ScriptableObjectInstaller<PlayerHealthHUDInstaller>

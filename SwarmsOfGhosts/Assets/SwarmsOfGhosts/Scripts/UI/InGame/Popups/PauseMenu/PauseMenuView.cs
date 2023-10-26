@@ -3,11 +3,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI.HUD.PauseMenu
+namespace SwarmsOfGhosts.UI.InGame.Popups.PauseMenu
 {
     public class PauseMenuView : MonoBehaviour
     {
-        [SerializeField] private GameObject _pauseMenuContents;
+        [SerializeField] private GameObject _contents;
         [SerializeField] private Button _continueButton;
         [SerializeField] private Button _settingsButton;
         [SerializeField] private Button _quitButton;
@@ -17,12 +17,12 @@ namespace SwarmsOfGhosts.UI.HUD.PauseMenu
         [Inject]
         private void Construct(IPauseMenuViewModel viewModel) => _viewModel = viewModel;
 
-        private void Awake() => _pauseMenuContents.SetActive(false);
+        private void Awake() => _contents.SetActive(false);
 
         private void Start()
         {
             _viewModel.IsPaused
-                .Subscribe(isPaused => _pauseMenuContents.SetActive(isPaused))
+                .Subscribe(isPaused => _contents.SetActive(isPaused))
                 .AddTo(this);
 
             _continueButton.onClick.AddListener(() => _viewModel.Unpause());
