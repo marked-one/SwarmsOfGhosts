@@ -59,6 +59,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
                 SpawnIdGroup = GetComponentDataFromEntity<EnemySpawnId>(true),
                 GrowthGroup = GetComponentDataFromEntity<EnemyGrowth>(true),
                 DestroyGroup = GetComponentDataFromEntity<DestroyTag>(true),
+                SpeedGroup = GetComponentDataFromEntity<EnemyMovementSpeed>(),
                 HealthGroup = GetComponentDataFromEntity<EnemyHealth>(),
                 DamageGroup = GetComponentDataFromEntity<EnemyDamage>(),
                 ScaleGroup = GetComponentDataFromEntity<Scale>(),
@@ -83,6 +84,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
             [ReadOnly] public ComponentDataFromEntity<EnemyGrowth> GrowthGroup;
             [ReadOnly] public ComponentDataFromEntity<DestroyTag> DestroyGroup;
 
+            public ComponentDataFromEntity<EnemyMovementSpeed> SpeedGroup;
             public ComponentDataFromEntity<EnemyHealth> HealthGroup;
             public ComponentDataFromEntity<EnemyDamage> DamageGroup;
             public ComponentDataFromEntity<Scale> ScaleGroup;
@@ -108,10 +110,15 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
 
                 var scaleA = ScaleGroup[entityA];
                 var scaleB = ScaleGroup[entityB];
-                var (entityToGrow, scale, entityToDestroy)
+                var speedA = SpeedGroup[entityA];
+                var speedB = SpeedGroup[entityB];
+                var (entityToGrow, scale, speed, entityToDestroy)
                     = scaleA.Value >= scaleB.Value
-                        ? (entityA, scaleA, entityB)
-                        : (entityB, scaleB, entityA);
+                        ? (entityA, scaleA, speedA, entityB)
+                        : (entityB, scaleB, speedB, entityA);
+
+                speed.Value = speedA.Value >= speedB.Value ? speedA.Value : speedB.Value;
+                SpeedGroup[entityToGrow] = speed;
 
                 var growth = GrowthGroup[entityToGrow];
                 if (math.abs(math.min(scale.Value, growth.Limit) - growth.Limit) < math.EPSILON)

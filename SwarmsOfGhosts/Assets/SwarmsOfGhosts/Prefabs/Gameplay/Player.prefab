@@ -186,7 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 30
   DestroyDistance: 15
-  Damage: 1
+  Damage: 2
 --- !u!114 &1747087253603433258
 MonoBehaviour:
   m_ObjectHideFlags: 0
