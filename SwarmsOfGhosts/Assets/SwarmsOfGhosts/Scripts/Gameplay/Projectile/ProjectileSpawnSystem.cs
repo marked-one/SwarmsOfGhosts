@@ -1,5 +1,7 @@
 using SwarmsOfGhosts.Gameplay.Enemy;
 using SwarmsOfGhosts.Gameplay.Environment;
+using SwarmsOfGhosts.Gameplay.Pause;
+using SwarmsOfGhosts.Gameplay.Restart;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -13,6 +15,8 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
     [UpdateAfter(typeof(TransformSystemGroup))]
     public partial class ProjectileSpawnSystem : SystemBase
     {
+        private PauseSystem _pauseSystem;
+
         private BeginSimulationEntityCommandBufferSystem _beginSimulationEntityCommandBufferSystem;
         private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
 
@@ -21,6 +25,8 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
         [BurstCompile]
         protected override void OnCreate()
         {
+            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+
             _beginSimulationEntityCommandBufferSystem =
                 World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();
 
@@ -33,6 +39,8 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
 
             var enemyQuery = GetEntityQuery(ComponentType.ReadOnly<EnemyTag>());
             RequireForUpdate(enemyQuery);
+
+            RequireSingletonForUpdate<IsPlayingTag>();
         }
 
         [BurstCompile]
@@ -43,9 +51,10 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
                     .CreateCommandBuffer()
                     .AsParallelWriter();
 
-            Entities.ForEach((Entity entity, int entityInQueryIndex, in ProjectileSettings settings) =>
+            Entities.ForEach((Entity entity, int entityInQueryIndex, in ProjectileSpawnTag _) =>
             {
                 endSimulationCommandBuffer.AddComponent<ProjectileSpawnTimer>(entityInQueryIndex, entity);
+                endSimulationCommandBuffer.AddComponent<ProjectileSpawnCounter>(entityInQueryIndex, entity);
             }).ScheduleParallel();
 
             _endSimulationEntityCommandBufferSystem.AddJobHandleForProducer(Dependency);
@@ -54,6 +63,9 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
         [BurstCompile]
         protected override void OnUpdate()
         {
+            if (_pauseSystem.IsPaused)
+                return;
+
             var battleGroundEntities = _battleGroundQuery
                 .ToEntityArrayAsync(Allocator.TempJob, out var battleGroundJobHandle);
 
@@ -84,17 +96,18 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
                 .ForEach((
                     int entityInQueryIndex,
                     ref ProjectileSpawnTimer timer,
+                    ref ProjectileSpawnCounter counter,
                     in Translation translation,
                     in LocalToWorld localToWorld,
-                    in ProjectileSettings settings) =>
+                    in ProjectileSpawnSettings spawnSettings,
+                    in ProjectileSettings settings,
+                    in ProjectileSpawnTag _) =>
                 {
-                    var waitTime = settings.SpawnInterval;
+                    var waitTime = spawnSettings.Cooldown;
                     var time = timer.Value;
                     time += deltaTime;
                     if (time < waitTime)
-                    {
                         timer.Value = time;
-                    }
                     else
                     {
                         timer.Value = 0f;
@@ -116,7 +129,7 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
                         {
                             var worldRotation = quaternion.LookRotation(localToWorld.Forward, localToWorld.Up);
                             InstantiateProjectile(entityInQueryIndex, ref beginSimulationCommandBuffer,
-                                worldPosition, worldRotation, settings);
+                                ref counter, worldPosition, worldRotation, spawnSettings, settings);
                         }
                     }
                 })
@@ -129,11 +142,14 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
         private static void InstantiateProjectile(
             int entityInQueryIndex,
             ref EntityCommandBuffer.ParallelWriter beginSimulationCommandBuffer,
+            ref ProjectileSpawnCounter counter,
             in float3 worldPosition,
             in quaternion worldRotation,
+            in ProjectileSpawnSettings spawnSettings,
             in ProjectileSettings settings)
         {
-            var entity = beginSimulationCommandBuffer.Instantiate(entityInQueryIndex, settings.Prefab);
+            var entity = beginSimulationCommandBuffer.Instantiate(entityInQueryIndex, spawnSettings.Prefab);
+            beginSimulationCommandBuffer.SetName(entityInQueryIndex, entity, $"Projectile {counter.Value}");
 
             beginSimulationCommandBuffer.SetComponent(
                 entityInQueryIndex, entity, new Translation { Value = worldPosition });
@@ -152,6 +168,26 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
 
             beginSimulationCommandBuffer.AddComponent(
                 entityInQueryIndex, entity, new ProjectileDamage() { Value = settings.Damage });
+
+            counter.Value++;
+        }
+
+        [BurstCompile]
+        protected override void OnStopRunning()
+        {
+            Entities
+                .WithStructuralChanges()
+                .ForEach((Entity entity, in ProjectileTag _) => EntityManager.DestroyEntity(entity))
+                .Run();
+
+            Entities
+                .WithStructuralChanges()
+                .ForEach((Entity entity, in ProjectileSpawnTag _) =>
+                {
+                    EntityManager.RemoveComponent<ProjectileSpawnTimer>(entity);
+                    EntityManager.RemoveComponent<ProjectileSpawnCounter>(entity);
+                })
+                .Run();
         }
     }
 }

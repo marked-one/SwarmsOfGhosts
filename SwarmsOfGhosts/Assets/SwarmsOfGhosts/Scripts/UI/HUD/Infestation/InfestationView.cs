@@ -17,7 +17,7 @@ namespace SwarmsOfGhosts.UI.HUD.Infestation
         private void Start()
         {
             _viewModel.Infestation
-                .Subscribe(value => { _infestationBar.value = value; })
+                .Subscribe(value => _infestationBar.value = value)
                 .AddTo(this);
         }
     }

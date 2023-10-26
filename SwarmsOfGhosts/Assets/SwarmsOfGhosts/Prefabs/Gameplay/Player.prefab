@@ -134,7 +134,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1322201832427052901}
-  - component: {fileID: 4951971439577231708}
+  - component: {fileID: 14646981111807383}
+  - component: {fileID: 1442483284457915335}
   - component: {fileID: 1747087253603433258}
   m_Layer: 0
   m_Name: ProjectileSpawner
@@ -157,7 +158,21 @@ Transform:
   m_Father: {fileID: 8563421121426627754}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
---- !u!114 &4951971439577231708
+--- !u!114 &14646981111807383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3890757654814980806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f9fa362819140cfbda5da1ce215fa48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Prefab: {fileID: 8866879786239616203, guid: 978b1fb72bf80f94795c82dcf3c67f48, type: 3}
+  Cooldown: 0.1
+--- !u!114 &1442483284457915335
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -169,10 +184,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 716d2a3bdd4345eeb050fd69892fe780, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 8866879786239616203, guid: 978b1fb72bf80f94795c82dcf3c67f48, type: 3}
-  SpawnInterval: 0.1
   Speed: 30
-  DestroyDistance: 20
+  DestroyDistance: 15
   Damage: 1
 --- !u!114 &1747087253603433258
 MonoBehaviour:

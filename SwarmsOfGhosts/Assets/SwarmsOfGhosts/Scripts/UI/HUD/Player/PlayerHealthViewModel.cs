@@ -1,4 +1,4 @@
-﻿using SwarmsOfGhosts.Gameplay.Facades;
+﻿using SwarmsOfGhosts.Gameplay.Player;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -15,22 +15,22 @@ namespace SwarmsOfGhosts.UI.HUD.Player
         private readonly ReactiveProperty<float> _playerHealth = new ReactiveProperty<float>();
         public IReadOnlyReactiveProperty<float> PlayerHealth => _playerHealth;
 
-        private readonly CompositeDisposable _dependencies = new CompositeDisposable();
+        private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
 
         [Inject]
         private PlayerHealthViewModel(IPlayerHealth playerHealth)
         {
             var maxPlayerHealth = 0f;
             playerHealth.Max
-                .Subscribe(value => { maxPlayerHealth = value; })
-                .AddTo(_dependencies);
+                .Subscribe(value => maxPlayerHealth = value)
+                .AddTo(_subscriptions);
 
             playerHealth.Current
                 .Subscribe(value =>
                 {
                     _playerHealth.Value = Mathf.Approximately(maxPlayerHealth, 0f) ? 1f : value / maxPlayerHealth;
                 })
-                .AddTo(_dependencies);
+                .AddTo(_subscriptions);
         }
     }
 }

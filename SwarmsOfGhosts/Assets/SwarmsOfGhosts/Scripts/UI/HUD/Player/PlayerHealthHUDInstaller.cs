@@ -1,4 +1,4 @@
-using SwarmsOfGhosts.Gameplay.Facades;
+using SwarmsOfGhosts.Gameplay.Player;
 using Unity.Entities;
 using UnityEngine;
 using Zenject;
@@ -13,7 +13,7 @@ namespace SwarmsOfGhosts.UI.HUD.Player
         public override void InstallBindings()
         {
             var world = World.DefaultGameObjectInjectionWorld;
-            var playerHealthFacade = world.GetOrCreateSystem<PlayerHealthFacade>();
+            var playerHealthFacade = world.GetOrCreateSystem<PlayerHealthFacadeSystem>();
 
             Container
                 .Bind<IPlayerHealth>()

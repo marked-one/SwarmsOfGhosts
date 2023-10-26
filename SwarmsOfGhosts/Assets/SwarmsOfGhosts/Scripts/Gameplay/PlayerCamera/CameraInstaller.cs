@@ -18,10 +18,7 @@ namespace SwarmsOfGhosts.Gameplay.PlayerCamera
                 .Bind<Camera>()
                 .FromComponentInNewPrefab(_cameraPrefab)
                 .AsSingle()
-                .OnInstantiated<Camera>((context, camera) =>
-                {
-                    cameraMovementSystem.Construct(camera);
-                })
+                .OnInstantiated<Camera>((context, camera) => cameraMovementSystem.Construct(camera))
                 .NonLazy();
         }
     }

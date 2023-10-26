@@ -1,5 +1,7 @@
 ﻿using System;
 using SwarmsOfGhosts.Gameplay.Enemy;
+using SwarmsOfGhosts.Gameplay.Pause;
+using SwarmsOfGhosts.Gameplay.Restart;
 using SwarmsOfGhosts.Gameplay.Utilities;
 using Unity.Burst;
 using Unity.Collections;
@@ -35,6 +37,7 @@ namespace SwarmsOfGhosts.Gameplay.Player
             }
         }
 
+        private PauseSystem _pauseSystem;
         private StepPhysicsWorld _stepPhysicsWorld;
         private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
         private NativeList<EquatableTriggerEvent> _currentTriggerEvents;
@@ -43,24 +46,24 @@ namespace SwarmsOfGhosts.Gameplay.Player
         [BurstCompile]
         protected override void OnCreate()
         {
+            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+            _stepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();
+            _endSimulationEntityCommandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+
             _currentTriggerEvents = new NativeList<EquatableTriggerEvent>(Allocator.Persistent);
 
             _previousTriggerEvents =
                 new NativeParallelHashMap<EquatableTriggerEvent, float>(128, Allocator.Persistent);
 
-            _stepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();
-            _endSimulationEntityCommandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
-        }
-
-        [BurstCompile]
-        protected override void OnStartRunning()
-        {
-            //this.RegisterPhysicsRuntimeSystemReadOnly();
+            RequireSingletonForUpdate<IsPlayingTag>();
         }
 
         [BurstCompile]
         protected override void OnUpdate()
         {
+            if (_pauseSystem.IsPaused)
+                return;
+
             _currentTriggerEvents.Clear();
 
             var deltaTime = Time.DeltaTime;

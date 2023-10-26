@@ -1,4 +1,5 @@
-﻿using Unity.Burst;
+﻿using SwarmsOfGhosts.Gameplay.Restart;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs.LowLevel.Unsafe;
@@ -24,6 +25,8 @@ namespace SwarmsOfGhosts.Gameplay.Utilities
                 randomArray[i] = new Random((uint)seed.Next(1, int.MaxValue));
 
             RandomArray = new NativeArray<Random>(randomArray, Allocator.Persistent);
+
+            RequireSingletonForUpdate<IsPlayingTag>();
         }
 
         [BurstCompile]

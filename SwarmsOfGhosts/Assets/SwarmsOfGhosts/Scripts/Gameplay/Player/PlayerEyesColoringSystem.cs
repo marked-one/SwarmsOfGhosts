@@ -1,4 +1,5 @@
-﻿using SwarmsOfGhosts.Gameplay.Utilities;
+﻿using SwarmsOfGhosts.Gameplay.Restart;
+using SwarmsOfGhosts.Gameplay.Utilities;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -17,10 +18,12 @@ namespace SwarmsOfGhosts.Gameplay.Player
         [BurstCompile]
         protected override void OnCreate()
         {
-            _randomSystem = World.GetExistingSystem<RandomSystem>();
+            _randomSystem = World.GetOrCreateSystem<RandomSystem>();
 
             _beginSimulationEntityCommandBufferSystem =
                 World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();
+
+            RequireSingletonForUpdate<IsPlayingTag>();
         }
 
         [BurstCompile]
@@ -36,7 +39,7 @@ namespace SwarmsOfGhosts.Gameplay.Player
             _randomSystem.MainThreadRandom = random;
 
             Entities
-                .ForEach((int nativeThreadIndex, int entityInQueryIndex, Entity entity, in PlayerEyeTag playerEyeTag) =>
+                .ForEach((int entityInQueryIndex, Entity entity, in PlayerEyeTag _) =>
                 {
                     beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
                         new URPMaterialPropertyBaseColor { Value = color });
