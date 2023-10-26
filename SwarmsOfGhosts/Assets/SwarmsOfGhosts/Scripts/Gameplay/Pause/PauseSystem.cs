@@ -1,4 +1,6 @@
 ﻿using InputSystem;
+using SwarmsOfGhosts.Gameplay.Enemy;
+using SwarmsOfGhosts.Gameplay.Player;
 using SwarmsOfGhosts.Gameplay.Restart;
 using Unity.Burst;
 using Unity.Entities;
@@ -18,7 +20,12 @@ namespace SwarmsOfGhosts.Gameplay.Pause
         protected override void OnCreate()
         {
             _inputActions = new InputActions();
+
+            var enemyQuery = GetEntityQuery(ComponentType.ReadOnly<EnemyTag>());
+            RequireForUpdate(enemyQuery);
+
             RequireSingletonForUpdate<IsPlayingTag>();
+            RequireSingletonForUpdate<PlayerTag>();
         }
 
         [BurstCompile]
