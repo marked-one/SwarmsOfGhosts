@@ -118,7 +118,6 @@ namespace SwarmsOfGhosts.Gameplay.Player
                 endSimulationCommandBuffer.DestroyEntity(entityInQueryIndex, entity);
             }).ScheduleParallel();
 
-
             Entities.ForEach((Entity entity, int entityInQueryIndex, in PlayerSpawnTag _) =>
             {
                 endSimulationCommandBuffer.RemoveComponent<PlayerSpawnCounter>(entityInQueryIndex, entity);

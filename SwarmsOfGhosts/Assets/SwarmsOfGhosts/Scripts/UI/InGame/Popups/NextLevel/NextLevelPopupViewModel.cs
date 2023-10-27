@@ -1,6 +1,8 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System;
+using Cysharp.Threading.Tasks;
 using SwarmsOfGhosts.MetaGame.Levels;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
@@ -8,28 +10,33 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
     public interface INextLevelPopupViewModel
     {
         public IReadOnlyReactiveProperty<int> LevelScore { get; }
-        public IReadOnlyReactiveProperty<bool> IsLevelWon { get; }
+        public IReadOnlyReactiveProperty<bool> IsLevelCompleted { get; }
         public UniTask StartNextLevel();
     }
 
-    public class NextLevelPopupViewModel : INextLevelPopupViewModel
+    public class NextLevelPopupViewModel : INextLevelPopupViewModel, IDisposable
     {
         private readonly ILevelSwitcher _levelSwitcher;
 
+        private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
+
         public IReadOnlyReactiveProperty<int> LevelScore { get; }
-        public IReadOnlyReactiveProperty<bool> IsLevelWon { get; }
+
+        private readonly ReactiveProperty<bool> _isLevelCompleted = new ReactiveProperty<bool>();
+        public IReadOnlyReactiveProperty<bool> IsLevelCompleted => _isLevelCompleted;
 
         [Inject]
         private NextLevelPopupViewModel(ILevelSwitcher levelSwitcher)
         {
             _levelSwitcher = levelSwitcher;
             LevelScore = levelSwitcher.LevelScore;
-            IsLevelWon = levelSwitcher.IsLevelWon;
+
+            levelSwitcher.LevelState
+                .Subscribe(value => _isLevelCompleted.Value = value == LevelState.LevelCompleted)
+                .AddTo(_subscriptions);
         }
 
-        public async UniTask StartNextLevel()
-        {
-            await _levelSwitcher.StartNextLevel();
-        }
+        public async UniTask StartNextLevel() => await _levelSwitcher.StartNextLevel();
+        public void Dispose() => _subscriptions.Dispose();
     }
 }

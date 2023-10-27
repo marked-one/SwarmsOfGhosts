@@ -17,10 +17,15 @@ using Random = Unity.Mathematics.Random;
 
 namespace SwarmsOfGhosts.Gameplay.Enemy
 {
+    public interface IEnemySpawn
+    {
+        public int GridSize { get; set; }
+    }
+
     [BurstCompile]
     [UpdateInGroup(typeof(InitializationSystemGroup), OrderLast = true)]
     [UpdateAfter(typeof(RandomSystem))]
-    public partial class EnemySpawnSystem : SystemBase
+    public partial class EnemySpawnSystem : SystemBase, IEnemySpawn
     {
         public struct ColliderDefaults
         {
@@ -38,6 +43,8 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         private EntityQuery _spawnsQuery;
         public NativeArray<int> ColliderCacheSizes { get; private set; }
         public NativeArray<BlobAssetReference<Collider>> ColliderCaches { get; private set; }
+
+        public int GridSize { get; set; }
 
         [BurstCompile]
         protected override void OnCreate()
@@ -75,6 +82,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
                     .CreateCommandBuffer()
                     .AsParallelWriter();
 
+            var enemyGridDimensionSize = GridSize;
             var randomArray = _randomSystem.RandomArray;
             Dependency = Entities
                 .WithNativeDisableParallelForRestriction(randomArray)
@@ -87,7 +95,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
                     in BattleGroundSettings battleGroundSettings,
                     in EnemySpawnTag _) =>
                 {
-                    var enemyGridDimensionSize = enemySpawnSettings.GridDimensionSize;
+
                     var enemySpread = enemySpawnSettings.Spread;
 
                     var random = randomArray[nativeThreadIndex];
