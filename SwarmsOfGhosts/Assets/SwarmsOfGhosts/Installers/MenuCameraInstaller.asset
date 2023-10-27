@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 085d90dbce2674d49857e5a7a0eff834, type: 3}
-  m_Name: CameraInstaller
+  m_Script: {fileID: 11500000, guid: fb423fdf4f8f0164794b10cfb2e052f5, type: 3}
+  m_Name: MenuCameraInstaller
   m_EditorClassIdentifier: 
-  _cameraPrefab: {fileID: 1603410891901900391, guid: 513601026f7942040b835fde0e237f59, type: 3}
+  _cameraPrefab: {fileID: 6140589902611809940, guid: 427168b484db2134b9190207e82f1b5c, type: 3}

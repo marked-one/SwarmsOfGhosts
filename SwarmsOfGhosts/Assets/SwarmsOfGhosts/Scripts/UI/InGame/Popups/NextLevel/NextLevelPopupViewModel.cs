@@ -2,7 +2,6 @@
 using Cysharp.Threading.Tasks;
 using SwarmsOfGhosts.MetaGame.Levels;
 using UniRx;
-using UnityEngine;
 using Zenject;
 
 namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
@@ -12,6 +11,7 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
         public IReadOnlyReactiveProperty<int> LevelScore { get; }
         public IReadOnlyReactiveProperty<bool> IsLevelCompleted { get; }
         public UniTask StartNextLevel();
+        public void OpenMainMenuScene();
     }
 
     public class NextLevelPopupViewModel : INextLevelPopupViewModel, IDisposable
@@ -29,6 +29,7 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
         private NextLevelPopupViewModel(ILevelSwitcher levelSwitcher)
         {
             _levelSwitcher = levelSwitcher;
+
             LevelScore = levelSwitcher.LevelScore;
 
             levelSwitcher.LevelState
@@ -37,6 +38,12 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
         }
 
         public async UniTask StartNextLevel() => await _levelSwitcher.StartNextLevel();
+
+        public void OpenMainMenuScene()
+        {
+            // TODO:
+        }
+
         public void Dispose() => _subscriptions.Dispose();
     }
 }

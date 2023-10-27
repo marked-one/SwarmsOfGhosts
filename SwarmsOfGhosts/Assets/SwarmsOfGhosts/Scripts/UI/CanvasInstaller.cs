@@ -14,6 +14,7 @@ namespace SwarmsOfGhosts.UI
                 .Bind<Canvas>()
                 .FromComponentInNewPrefab(_canvasPrefab)
                 .AsSingle()
+                .OnInstantiated<Canvas>((context, canvas) => canvas.worldCamera = context.Container.Resolve<Camera>())
                 .NonLazy();
         }
     }

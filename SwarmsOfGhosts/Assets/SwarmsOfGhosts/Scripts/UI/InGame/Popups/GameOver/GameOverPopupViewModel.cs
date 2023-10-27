@@ -9,6 +9,7 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.GameOver
     {
         public IReadOnlyReactiveProperty<int> LevelScore { get; }
         public IReadOnlyReactiveProperty<bool> IsGameOver { get; }
+        public void OpenMainMenuScene();
     }
 
     public class GameOverPopupViewModel : IGameOverPopupViewModel, IDisposable
@@ -28,6 +29,11 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.GameOver
             levelSwitcher.LevelState
                 .Subscribe(value => _isGameOver.Value = value == LevelState.GameOver)
                 .AddTo(_subscriptions);
+        }
+
+        public void OpenMainMenuScene()
+        {
+            // TODO:
         }
 
         public void Dispose() => _subscriptions.Dispose();

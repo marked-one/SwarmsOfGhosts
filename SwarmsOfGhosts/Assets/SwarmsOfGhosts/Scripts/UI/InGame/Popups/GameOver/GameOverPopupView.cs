@@ -45,10 +45,7 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.GameOver
                 .Subscribe(value => _contents.SetActive(value))
                 .AddTo(this);
 
-            _quitButton.onClick.AddListener(() =>
-            {
-                // TODO: Go to main menu
-            });
+            _quitButton.onClick.AddListener(_viewModel.OpenMainMenuScene);
         }
 
         private void OnDestroy() => _quitButton.onClick.RemoveAllListeners();
