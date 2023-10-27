@@ -14,6 +14,10 @@
             "BuildCurrentScene": false,
             "SceneInfos": [
                 {
+                    "Scene": "GlobalObjectId_V1-1-7759d02e2c99af04290092e305f6f722-102900000-0",
+                    "AutoLoad": true
+                },
+                {
                     "Scene": "GlobalObjectId_V1-1-d1c3109bdb54ad54c8a2b2838528e640-102900000-0",
                     "AutoLoad": false
                 }
@@ -21,7 +25,7 @@
         },
         {
             "$type": "Unity.Build.Common.GeneralSettings, Unity.Build",
-            "ProductName": "Swarms Of Ghosts Development",
+            "ProductName": "Swarms Of Ghosts Debug",
             "CompanyName": "Vladimir Klubkov",
             "Version": "0.1"
         },

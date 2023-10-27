@@ -8,6 +8,8 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.PauseMenu
     {
         public IReadOnlyReactiveProperty<bool> IsPaused { get; }
         public void Unpause();
+        public void OpenSettingsMenu();
+        public void OpenMainMenuScene();
     }
 
     public class PauseMenuViewModel : IPauseMenuViewModel
@@ -24,5 +26,14 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.PauseMenu
         }
 
         public void Unpause() => _pausable.Unpause();
+        public void OpenSettingsMenu()
+        {
+            // TODO:
+        }
+
+        public void OpenMainMenuScene()
+        {
+            // TODO:
+        }
     }
 }

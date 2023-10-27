@@ -25,17 +25,9 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.PauseMenu
                 .Subscribe(isPaused => _contents.SetActive(isPaused))
                 .AddTo(this);
 
-            _continueButton.onClick.AddListener(() => _viewModel.Unpause());
-
-            _settingsButton.onClick.AddListener(() =>
-            {
-                // TODO: Go to Settings menu.
-            });
-
-            _quitButton.onClick.AddListener(() =>
-            {
-                // TODO: Go to main menu
-            });
+            _continueButton.onClick.AddListener(_viewModel.Unpause);
+            _settingsButton.onClick.AddListener(_viewModel.OpenSettingsMenu);
+            _quitButton.onClick.AddListener(_viewModel.OpenMainMenuScene);
         }
 
         private void OnDestroy()

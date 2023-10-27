@@ -59,10 +59,7 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
                     });
             });
 
-            _quitButton.onClick.AddListener(() =>
-            {
-                // TODO: Go to main menu
-            });
+            _quitButton.onClick.AddListener(_viewModel.OpenMainMenuScene);
         }
 
         private void OnDestroy()

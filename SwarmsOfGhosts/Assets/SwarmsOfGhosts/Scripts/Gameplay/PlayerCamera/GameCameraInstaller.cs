@@ -4,8 +4,8 @@ using Zenject;
 
 namespace SwarmsOfGhosts.Gameplay.PlayerCamera
 {
-    [CreateAssetMenu(fileName = "CameraInstaller", menuName = "Installers/CameraInstaller")]
-    public class CameraInstaller : ScriptableObjectInstaller<CameraInstaller>
+    [CreateAssetMenu(fileName = "GameCameraInstaller", menuName = "Installers/GameCameraInstaller")]
+    public class GameCameraInstaller : ScriptableObjectInstaller<GameCameraInstaller>
     {
         [SerializeField] private GameObject _cameraPrefab;
 
