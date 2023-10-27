@@ -10,20 +10,29 @@ using Zenject;
 
 namespace SwarmsOfGhosts.MetaGame.Levels
 {
+    public enum LevelState
+    {
+        Playing,
+        LevelCompleted,
+        GameOver,
+        GameCompleted
+    }
+
     public interface ILevelSwitcher
     {
         public IReadOnlyReactiveProperty<int> LevelScore { get; }
-        public IReadOnlyReactiveProperty<bool> IsLevelWon { get; }
-        public IReadOnlyReactiveProperty<bool> IsGameOver { get; }
+        public IReadOnlyReactiveProperty<LevelState> LevelState { get; }
         public UniTask StartNextLevel();
     }
 
     public class LevelSwitcher : ILevelSwitcher, IInitializable, IDisposable
     {
         private readonly ISave _scoreSave;
+        private readonly ILevelsConfig _levelsConfig;
         private readonly IRestartable _restartableLevel;
         private readonly IInfestation _enemyInfestation;
         private readonly IPlayerHealth _playerHealth;
+        private readonly IEnemySpawn _enemySpawn;
 
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
 
@@ -32,61 +41,89 @@ namespace SwarmsOfGhosts.MetaGame.Levels
         private readonly ReactiveProperty<int> _levelScore = new ReactiveProperty<int>(0);
         public IReadOnlyReactiveProperty<int> LevelScore => _levelScore;
 
-        private readonly ReactiveProperty<bool> _isLevelWon = new ReactiveProperty<bool>();
-        public IReadOnlyReactiveProperty<bool> IsLevelWon => _isLevelWon;
-
-        private readonly ReactiveProperty<bool> _isGameOver = new ReactiveProperty<bool>();
-        public IReadOnlyReactiveProperty<bool> IsGameOver => _isGameOver;
+        private readonly ReactiveProperty<LevelState> _levelState = new ReactiveProperty<LevelState>();
+        public IReadOnlyReactiveProperty<LevelState> LevelState => _levelState;
 
         [Inject]
-        private LevelSwitcher(ISave scoreSave, IRestartable restartableLevel,
-            IInfestation enemyInfestation, IPlayerHealth playerHealth)
+        private LevelSwitcher(ISave scoreSave, ILevelsConfig levelsConfig, IRestartable restartableLevel,
+            IInfestation enemyInfestation, IPlayerHealth playerHealth, IEnemySpawn enemySpawn)
         {
             _scoreSave = scoreSave;
+            _levelsConfig = levelsConfig;
             _restartableLevel = restartableLevel;
             _enemyInfestation = enemyInfestation;
             _playerHealth = playerHealth;
+            _enemySpawn = enemySpawn;
         }
 
         public void Initialize()
         {
+            _enemySpawn.GridSize = _levelsConfig.GridStep;
             _currentLevel = 1;
-            _isLevelWon.Value = false;
+            _levelState.Value = Levels.LevelState.Playing;
+
+            var areEnemiesDead = false;
+            var isPlayerDead = false;
+
+            // Note: skip the initialization because values are 0s at first
 
             _enemyInfestation.Current
-                .Skip(1) // Skip initialization because value is 0 in the beginning.
-                .Subscribe(value => EndLevel(value, _isLevelWon, _currentLevel))
+                .Skip(1)
+                .Subscribe(value =>
+                {
+                    areEnemiesDead = Mathf.Approximately(value, 0f);
+                    EndLevel();
+                })
                 .AddTo(_subscriptions);
 
             _playerHealth.Current
-                .Skip(1) // Skip initialization because value is 0 in the beginning.
-                .Subscribe(value => EndLevel(value, _isGameOver, _currentLevel - 1))
+                .Skip(1)
+                .Subscribe(value =>
+                {
+                    isPlayerDead = Mathf.Approximately(value, 0f);
+                    EndLevel();
+                })
                 .AddTo(_subscriptions);
 
-            void EndLevel(float value, ReactiveProperty<bool> needShowPopup, int currentLevel)
+            void EndLevel()
             {
-                if (Mathf.Approximately(value, 0f))
+                if (areEnemiesDead && isPlayerDead)
+                    return;
+
+                if (areEnemiesDead)
                 {
-                    UpdateLevelScore(currentLevel);
-                    needShowPopup.Value = true;
+                    UpdateLevelScore(_currentLevel);
+
+                    _levelState.Value = _currentLevel == _levelsConfig.MaxSteps
+                        ? Levels.LevelState.GameCompleted
+                        : Levels.LevelState.LevelCompleted;
+
                     return;
                 }
 
-                needShowPopup.Value = false;
+                if (isPlayerDead)
+                {
+                    UpdateLevelScore(_currentLevel - 1);
+                    _levelState.Value = Levels.LevelState.GameOver;
+                    return;
+                }
+
+                _levelState.Value = Levels.LevelState.Playing;
             }
-        }
 
-        private void UpdateLevelScore(int value)
-        {
-            var savedScore = _scoreSave.Score.Value;
-            if (value > savedScore)
-                _scoreSave.SaveScore(value);
+            void UpdateLevelScore(int value)
+            {
+                var savedScore = _scoreSave.Score.Value;
+                if (value > savedScore)
+                    _scoreSave.SaveScore(value);
 
-            _levelScore.Value = value;
+                _levelScore.Value = value;
+            }
         }
 
         public async UniTask StartNextLevel()
         {
+            _enemySpawn.GridSize += _levelsConfig.GridStep;
             await _restartableLevel.Restart();
             _currentLevel++;
         }

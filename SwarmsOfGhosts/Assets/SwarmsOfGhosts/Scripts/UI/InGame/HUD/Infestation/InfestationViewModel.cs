@@ -3,7 +3,7 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI.HUD.Infestation
+namespace SwarmsOfGhosts.UI.InGame.HUD.Infestation
 {
     public interface IInfestationViewModel
     {

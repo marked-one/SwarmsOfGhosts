@@ -1,4 +1,5 @@
-﻿using SwarmsOfGhosts.MetaGame.Levels;
+﻿using System;
+using SwarmsOfGhosts.MetaGame.Levels;
 using UniRx;
 using Zenject;
 
@@ -10,16 +11,25 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.GameOver
         public IReadOnlyReactiveProperty<bool> IsGameOver { get; }
     }
 
-    public class GameOverPopupViewModel : IGameOverPopupViewModel
+    public class GameOverPopupViewModel : IGameOverPopupViewModel, IDisposable
     {
+        private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
+
         public IReadOnlyReactiveProperty<int> LevelScore { get; }
-        public IReadOnlyReactiveProperty<bool> IsGameOver { get; }
+
+        private readonly ReactiveProperty<bool> _isGameOver = new ReactiveProperty<bool>();
+        public IReadOnlyReactiveProperty<bool> IsGameOver => _isGameOver;
 
         [Inject]
         private GameOverPopupViewModel(ILevelSwitcher levelSwitcher)
         {
             LevelScore = levelSwitcher.LevelScore;
-            IsGameOver = levelSwitcher.IsGameOver;
+
+            levelSwitcher.LevelState
+                .Subscribe(value => _isGameOver.Value = value == LevelState.GameOver)
+                .AddTo(_subscriptions);
         }
+
+        public void Dispose() => _subscriptions.Dispose();
     }
 }

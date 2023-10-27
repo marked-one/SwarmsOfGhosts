@@ -4,7 +4,7 @@ using Unity.Entities;
 using UnityEngine;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI.HUD.Infestation
+namespace SwarmsOfGhosts.UI.InGame.HUD.Infestation
 {
     [CreateAssetMenu(fileName = "InfestationHUDInstaller", menuName = "Installers/InfestationHUDInstaller")]
     public class InfestationHUDInstaller : ScriptableObjectInstaller<PlayerHealthHUDInstaller>

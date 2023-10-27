@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI.HUD.Infestation
+namespace SwarmsOfGhosts.UI.InGame.HUD.Infestation
 {
     public class InfestationView : MonoBehaviour
     {

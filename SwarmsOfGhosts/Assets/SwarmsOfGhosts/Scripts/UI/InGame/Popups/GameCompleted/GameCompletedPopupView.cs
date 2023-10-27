@@ -1,28 +1,26 @@
 ﻿using System;
-using Cysharp.Threading.Tasks;
 using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
+namespace SwarmsOfGhosts.UI.InGame.Popups.GameCompleted
 {
-    public class NextLevelPopupView : MonoBehaviour
+    public class GameCompletedPopupView : MonoBehaviour
     {
         [SerializeField] private GameObject _contents;
         [SerializeField] private TextMeshProUGUI _scoreLabel;
-        [SerializeField] private Button _nextButton;
         [SerializeField] private Button _quitButton;
         [Space]
         [SerializeField] private float _popupDelaySeconds = 0.4f;
 
         private string _scorePrefix;
 
-        private INextLevelPopupViewModel _viewModel;
+        private IGameCompletedPopupViewModel _viewModel;
 
         [Inject]
-        private void Construct(INextLevelPopupViewModel popupViewModel) => _viewModel = popupViewModel;
+        private void Construct(IGameCompletedPopupViewModel viewModel) => _viewModel = viewModel;
 
         private void Awake()
         {
@@ -36,28 +34,16 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
                 .Subscribe(value => _scoreLabel.text = $"{_scorePrefix}{value}")
                 .AddTo(this);
 
-            _viewModel.IsLevelCompleted
+            _viewModel.IsGameCompleted
                 .Where(value => value)
                 .Delay(TimeSpan.FromSeconds(_popupDelaySeconds))
                 .Subscribe(value => _contents.SetActive(value))
                 .AddTo(this);
 
-            _viewModel.IsLevelCompleted
+            _viewModel.IsGameCompleted
                 .Where(value => !value)
                 .Subscribe(value => _contents.SetActive(value))
                 .AddTo(this);
-
-            _nextButton.onClick.AddListener(() =>
-            {
-                _nextButton.enabled = false;
-                _viewModel
-                    .StartNextLevel()
-                    .ContinueWith(() => _nextButton.enabled = true)
-                    .Forget(exception =>
-                    {
-                        Debug.LogException(exception);
-                    });
-            });
 
             _quitButton.onClick.AddListener(() =>
             {
@@ -65,10 +51,6 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
             });
         }
 
-        private void OnDestroy()
-        {
-            _nextButton.onClick.RemoveAllListeners();
-            _quitButton.onClick.RemoveAllListeners();
-        }
+        private void OnDestroy() => _quitButton.onClick.RemoveAllListeners();
     }
 }

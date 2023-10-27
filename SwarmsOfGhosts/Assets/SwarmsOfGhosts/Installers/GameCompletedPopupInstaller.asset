@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70567dcb45f75f9459a41e9f30903393, type: 3}
+  m_Name: GameCompletedPopupInstaller
+  m_EditorClassIdentifier: 
+  _gameCompletedPopupViewPrefab: {fileID: 2123713431409651014, guid: 6930514a3901a6e4d80a700188831219, type: 3}
