@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using Cysharp.Threading.Tasks;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,8 @@ namespace SwarmsOfGhosts.UI.Menu.MainMenu
 {
     public class MainMenuView : MonoBehaviour
     {
+        [SerializeField] private GameObject _player;
+        [SerializeField] private GameObject _enemy;
         [SerializeField] private Button _playButton;
         [SerializeField] private Button _settingsButton;
         [SerializeField] private Button _quitButton;
@@ -29,7 +32,22 @@ namespace SwarmsOfGhosts.UI.Menu.MainMenu
                 .AddTo(this);
 
             _playButton.onClick.AddListener(_viewModel.OpenGameplayScene);
-            _settingsButton.onClick.AddListener(_viewModel.OpenSettingsMenu);
+
+            _settingsButton.onClick.AddListener(() =>
+            {
+                EnableCharacters(false);
+
+                _viewModel.OpenSettingsMenu()
+                    .ContinueWith(() => EnableCharacters(true))
+                    .Forget(e => { Debug.LogException(e); });
+            });
+
+            void EnableCharacters(bool enable)
+            {
+                _player.SetActive(enable);
+                _enemy.SetActive(enable);
+            }
+
             _quitButton.onClick.AddListener(_viewModel.QuitApplication);
         }
 

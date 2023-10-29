@@ -18,14 +18,14 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
     [UpdateBefore(typeof(EnemyGrowthSystem))]
     public partial class EnemyDamageSystem : SystemBase
     {
-        private PauseSystem _pauseSystem;
+        private PauseFacadeSystem _pauseSystem;
         private StepPhysicsWorld _stepPhysicsWorld;
         private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
 
         [BurstCompile]
         protected override void OnCreate()
         {
-            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+            _pauseSystem = World.GetOrCreateSystem<PauseFacadeSystem>();
             _stepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();
             _endSimulationEntityCommandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 

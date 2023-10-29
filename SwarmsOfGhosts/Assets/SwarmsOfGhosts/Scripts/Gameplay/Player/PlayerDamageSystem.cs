@@ -37,7 +37,7 @@ namespace SwarmsOfGhosts.Gameplay.Player
             }
         }
 
-        private PauseSystem _pauseSystem;
+        private PauseFacadeSystem _pauseSystem;
         private StepPhysicsWorld _stepPhysicsWorld;
         private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
         private NativeList<EquatableTriggerEvent> _currentTriggerEvents;
@@ -46,7 +46,7 @@ namespace SwarmsOfGhosts.Gameplay.Player
         [BurstCompile]
         protected override void OnCreate()
         {
-            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+            _pauseSystem = World.GetOrCreateSystem<PauseFacadeSystem>();
             _stepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();
             _endSimulationEntityCommandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 

@@ -14,13 +14,13 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
     [UpdateAfter(typeof(PlayerMovementSystem))]
     public partial class ProjectileMovementSystem : SystemBase
     {
-        private PauseSystem _pauseSystem;
+        private PauseFacadeSystem _pauseSystem;
         private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
 
         [BurstCompile]
         protected override void OnCreate()
         {
-            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+            _pauseSystem = World.GetOrCreateSystem<PauseFacadeSystem>();
 
             _endSimulationEntityCommandBufferSystem =
                 World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();

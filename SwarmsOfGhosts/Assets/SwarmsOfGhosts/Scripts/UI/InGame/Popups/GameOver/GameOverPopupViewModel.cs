@@ -1,5 +1,6 @@
 ﻿using System;
 using SwarmsOfGhosts.MetaGame.Levels;
+using SwarmsOfGhosts.UI.InGame.GameplayCursor;
 using UniRx;
 using Zenject;
 
@@ -8,26 +9,40 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.GameOver
     public interface IGameOverPopupViewModel
     {
         public IReadOnlyReactiveProperty<int> LevelScore { get; }
-        public IReadOnlyReactiveProperty<bool> IsGameOver { get; }
+        public IReadOnlyReactiveProperty<bool> IsVisible { get; }
         public void OpenMainMenuScene();
+        public void SetCursorVisible(bool isVisible);
     }
 
-    public class GameOverPopupViewModel : IGameOverPopupViewModel, IDisposable
+    public interface IGameOverPopup
     {
+        public IReadOnlyReactiveProperty<bool> IsVisible { get; }
+    }
+
+    public class GameOverPopupViewModel : IGameOverPopupViewModel, IGameOverPopup, IDisposable
+    {
+        private readonly ICursor _cursor;
+
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
 
         public IReadOnlyReactiveProperty<int> LevelScore { get; }
 
-        private readonly ReactiveProperty<bool> _isGameOver = new ReactiveProperty<bool>();
-        public IReadOnlyReactiveProperty<bool> IsGameOver => _isGameOver;
+        private readonly ReactiveProperty<bool> _isVisible = new ReactiveProperty<bool>();
+        public IReadOnlyReactiveProperty<bool> IsVisible => _isVisible;
 
         [Inject]
-        private GameOverPopupViewModel(ILevelSwitcher levelSwitcher)
+        private GameOverPopupViewModel(ILevelSwitcher levelSwitcher, ICursor cursor)
         {
+            _cursor = cursor;
+
             LevelScore = levelSwitcher.LevelScore;
 
             levelSwitcher.LevelState
-                .Subscribe(value => _isGameOver.Value = value == LevelState.GameOver)
+                .Subscribe(value => _isVisible.Value = value == LevelState.GameOver)
+                .AddTo(_subscriptions);
+
+            IsVisible
+                .Subscribe(cursor.SetVisibility)
                 .AddTo(_subscriptions);
         }
 
@@ -35,6 +50,8 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.GameOver
         {
             // TODO:
         }
+
+        public void SetCursorVisible(bool isVisible) => _cursor.SetVisibility(isVisible);
 
         public void Dispose() => _subscriptions.Dispose();
     }

@@ -13,13 +13,13 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
     [UpdateAfter(typeof(PlayerMovementSystem))]
     public partial class EnemyMovementSystem : SystemBase
     {
-        private PauseSystem _pauseSystem;
+        private PauseFacadeSystem _pauseSystem;
         private Entity _player;
 
         [BurstCompile]
         protected override void OnCreate()
         {
-            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+            _pauseSystem = World.GetOrCreateSystem<PauseFacadeSystem>();
 
             RequireSingletonForUpdate<IsPlayingTag>();
             RequireSingletonForUpdate<PlayerTag>();

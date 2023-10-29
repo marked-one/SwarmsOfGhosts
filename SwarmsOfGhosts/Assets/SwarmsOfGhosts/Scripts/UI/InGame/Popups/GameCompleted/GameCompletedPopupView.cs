@@ -34,16 +34,22 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.GameCompleted
                 .Subscribe(value => _scoreLabel.text = $"{_scorePrefix}{value}")
                 .AddTo(this);
 
-            _viewModel.IsGameCompleted
+            _viewModel.IsVisible
                 .Where(value => value)
                 .Delay(TimeSpan.FromSeconds(_popupDelaySeconds))
-                .Subscribe(value => _contents.SetActive(value))
+                .Subscribe(SetVisible)
                 .AddTo(this);
 
-            _viewModel.IsGameCompleted
+            _viewModel.IsVisible
                 .Where(value => !value)
-                .Subscribe(value => _contents.SetActive(value))
+                .Subscribe(SetVisible)
                 .AddTo(this);
+
+            void SetVisible(bool isVisible)
+            {
+                _contents.SetActive(isVisible);
+                _viewModel.SetCursorVisible(isVisible);
+            }
 
             _quitButton.onClick.AddListener(_viewModel.OpenMainMenuScene);
         }

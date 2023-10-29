@@ -11,7 +11,7 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
         public override void InstallBindings()
         {
             Container
-                .BindInterfacesTo<NextLevelPopupViewModel>()
+                .BindInterfacesTo<NextLevelPopupPopupViewModel>()
                 .AsSingle();
 
             Container

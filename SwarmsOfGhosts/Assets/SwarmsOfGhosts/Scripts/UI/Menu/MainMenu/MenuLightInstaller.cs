@@ -8,13 +8,11 @@ namespace SwarmsOfGhosts.UI.Menu.MainMenu
     {
         [SerializeField] private Light _lightPrefab;
 
-        public override void InstallBindings()
-        {
+        public override void InstallBindings() =>
             Container
                 .Bind<Light>()
                 .FromComponentInNewPrefab(_lightPrefab)
                 .AsSingle()
                 .NonLazy();
-        }
     }
 }

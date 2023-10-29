@@ -1,5 +1,7 @@
-﻿using SwarmsOfGhosts.App;
+﻿using Cysharp.Threading.Tasks;
+using SwarmsOfGhosts.App;
 using SwarmsOfGhosts.MetaGame.Saves;
+using SwarmsOfGhosts.UI.Menu.SettingsMenu;
 using UniRx;
 using Zenject;
 
@@ -9,21 +11,23 @@ namespace SwarmsOfGhosts.UI.Menu.MainMenu
     {
         public IReadOnlyReactiveProperty<int> BestScore { get; }
         public void OpenGameplayScene();
-        public void OpenSettingsMenu();
+        public UniTask OpenSettingsMenu();
         public void QuitApplication();
     }
 
     public class MainMenuViewModel : IMainMenuViewModel
     {
         private readonly IApplication _application;
+        private readonly ISettingsMenu _settingsMenu;
 
         public IReadOnlyReactiveProperty<int> BestScore { get; }
 
         [Inject]
-        private MainMenuViewModel(IApplication application, ISave save)
+        private MainMenuViewModel(IApplication application, ISave save, ISettingsMenu settingsMenu)
         {
             _application = application;
             BestScore = save.Score;
+            _settingsMenu = settingsMenu;
         }
 
         public void OpenGameplayScene()
@@ -31,11 +35,7 @@ namespace SwarmsOfGhosts.UI.Menu.MainMenu
             // TODO:
         }
 
-        public void OpenSettingsMenu()
-        {
-            // TODO:
-        }
-
+        public async UniTask OpenSettingsMenu() => await _settingsMenu.Open();
         public void QuitApplication() => _application.Quit();
     }
 }

@@ -19,7 +19,6 @@ namespace SwarmsOfGhosts.UI.Menu.MainMenu
                 .FromComponentInNewPrefab(_mainMenuViewPrefab)
                 .UnderTransform(context => context.Container.Resolve<Canvas>().transform)
                 .AsSingle()
-                .OnInstantiated<MainMenuView>((context, view) => view.transform.SetSiblingIndex(10))
                 .NonLazy();
         }
     }

@@ -8,13 +8,11 @@ namespace SwarmsOfGhosts.UI.Menu.MainMenu
     {
         [SerializeField] private GameObject _cameraPrefab;
 
-        public override void InstallBindings()
-        {
+        public override void InstallBindings() =>
             Container
                 .Bind<Camera>()
                 .FromComponentInNewPrefab(_cameraPrefab)
                 .AsSingle()
                 .NonLazy();
-        }
     }
 }

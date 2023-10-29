@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,12 +22,23 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.PauseMenu
 
         private void Start()
         {
-            _viewModel.IsPaused
-                .Subscribe(isPaused => _contents.SetActive(isPaused))
+            _viewModel.IsVisible
+                .Subscribe(SetVisible)
                 .AddTo(this);
 
-            _continueButton.onClick.AddListener(_viewModel.Unpause);
-            _settingsButton.onClick.AddListener(_viewModel.OpenSettingsMenu);
+            void SetVisible(bool isVisible)
+            {
+                _contents.SetActive(isVisible);
+                _viewModel.SetCursorVisible(isVisible);
+            }
+
+            _continueButton.onClick.AddListener(() => _viewModel.Close());
+
+            _settingsButton.onClick.AddListener(() =>
+                _viewModel
+                    .OpenSettingsMenu()
+                    .Forget(e => { Debug.LogException(e); }));
+
             _quitButton.onClick.AddListener(_viewModel.OpenMainMenuScene);
         }
 

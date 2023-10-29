@@ -27,6 +27,11 @@ namespace SwarmsOfGhosts.Gameplay.Restart
             _restartCompletionSource = null;
         }
 
+        // In theory, this system should instantiate the Entity with IsPlayingTag in its OnStartRunning.
+        // But this makes behaviour unpredictable as the same code works differently between the Editor
+        // with open subscene, the Editor with closed subscene and the built app. So this Entity exists
+        // in the subscene right away. Subsequent destructions and creations of the Entity work fine.
+
         [BurstCompile]
         protected override void OnUpdate()
         {

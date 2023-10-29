@@ -17,13 +17,13 @@ namespace SwarmsOfGhosts.Gameplay.Utilities
     [UpdateBefore(typeof(BeginInitializationEntityCommandBufferSystem))]
     public partial class EntityDestructionSystem : SystemBase
     {
-        private PauseSystem _pauseSystem;
+        private PauseFacadeSystem _pauseSystem;
         private BeginInitializationEntityCommandBufferSystem _beginInitializationEntityCommandBufferSystem;
 
         [BurstCompile]
         protected override void OnCreate()
         {
-            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+            _pauseSystem = World.GetOrCreateSystem<PauseFacadeSystem>();
 
             _beginInitializationEntityCommandBufferSystem =
                 World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
