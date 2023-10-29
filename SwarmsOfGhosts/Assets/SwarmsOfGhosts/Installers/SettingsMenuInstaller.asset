@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06d79404d41edc448867a20b274066b0, type: 3}
+  m_Name: SettingsMenuInstaller
+  m_EditorClassIdentifier: 
+  _settingsMenuViewPrefab: {fileID: 2168843065697824194, guid: ea48012f4f606964781d623eeaf2fb3d, type: 3}

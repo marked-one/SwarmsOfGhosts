@@ -15,7 +15,7 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
     [UpdateAfter(typeof(TransformSystemGroup))]
     public partial class ProjectileSpawnSystem : SystemBase
     {
-        private PauseSystem _pauseSystem;
+        private PauseFacadeSystem _pauseSystem;
 
         private BeginSimulationEntityCommandBufferSystem _beginSimulationEntityCommandBufferSystem;
         private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
@@ -25,7 +25,7 @@ namespace SwarmsOfGhosts.Gameplay.Projectile
         [BurstCompile]
         protected override void OnCreate()
         {
-            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+            _pauseSystem = World.GetOrCreateSystem<PauseFacadeSystem>();
 
             _beginSimulationEntityCommandBufferSystem =
                 World.GetOrCreateSystem<BeginSimulationEntityCommandBufferSystem>();

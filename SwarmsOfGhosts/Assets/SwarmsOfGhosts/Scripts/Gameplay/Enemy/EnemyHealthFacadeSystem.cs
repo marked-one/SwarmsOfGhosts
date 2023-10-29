@@ -18,7 +18,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
     [UpdateAfter(typeof(FixedStepSimulationSystemGroup))]
     public partial class EnemyHealthFacadeSystem : SystemBase, IInfestation
     {
-        private PauseSystem _pauseSystem;
+        private PauseFacadeSystem _pauseSystem;
 
         private readonly ReactiveProperty<float> _current = new ReactiveProperty<float>();
         private readonly ReactiveProperty<float> _max = new ReactiveProperty<float>();
@@ -29,7 +29,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         [BurstCompile]
         protected override void OnCreate()
         {
-            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+            _pauseSystem = World.GetOrCreateSystem<PauseFacadeSystem>();
             RequireSingletonForUpdate<IsPlayingTag>();
         }
 

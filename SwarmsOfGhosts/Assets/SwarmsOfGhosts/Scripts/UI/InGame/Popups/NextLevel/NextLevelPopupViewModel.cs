@@ -1,6 +1,7 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using SwarmsOfGhosts.MetaGame.Levels;
+using SwarmsOfGhosts.UI.InGame.GameplayCursor;
 using UniRx;
 using Zenject;
 
@@ -9,31 +10,43 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
     public interface INextLevelPopupViewModel
     {
         public IReadOnlyReactiveProperty<int> LevelScore { get; }
-        public IReadOnlyReactiveProperty<bool> IsLevelCompleted { get; }
+        public IReadOnlyReactiveProperty<bool> IsVisible { get; }
         public UniTask StartNextLevel();
         public void OpenMainMenuScene();
+        public void SetCursorVisible(bool isVisible);
     }
 
-    public class NextLevelPopupViewModel : INextLevelPopupViewModel, IDisposable
+    public interface INextLevelPopup
+    {
+        public IReadOnlyReactiveProperty<bool> IsVisible { get; }
+    }
+
+    public class NextLevelPopupPopupViewModel : INextLevelPopupViewModel, INextLevelPopup, IDisposable
     {
         private readonly ILevelSwitcher _levelSwitcher;
+        private readonly ICursor _cursor;
 
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
 
         public IReadOnlyReactiveProperty<int> LevelScore { get; }
 
-        private readonly ReactiveProperty<bool> _isLevelCompleted = new ReactiveProperty<bool>();
-        public IReadOnlyReactiveProperty<bool> IsLevelCompleted => _isLevelCompleted;
+        private readonly ReactiveProperty<bool> _isVisible = new ReactiveProperty<bool>();
+        public IReadOnlyReactiveProperty<bool> IsVisible => _isVisible;
 
         [Inject]
-        private NextLevelPopupViewModel(ILevelSwitcher levelSwitcher)
+        private NextLevelPopupPopupViewModel(ILevelSwitcher levelSwitcher, ICursor cursor)
         {
             _levelSwitcher = levelSwitcher;
+            _cursor = cursor;
 
-            LevelScore = levelSwitcher.LevelScore;
+            LevelScore = _levelSwitcher.LevelScore;
 
-            levelSwitcher.LevelState
-                .Subscribe(value => _isLevelCompleted.Value = value == LevelState.LevelCompleted)
+            _levelSwitcher.LevelState
+                .Subscribe(value => _isVisible.Value = value == LevelState.LevelCompleted)
+                .AddTo(_subscriptions);
+
+            IsVisible
+                .Subscribe(cursor.SetVisibility)
                 .AddTo(_subscriptions);
         }
 
@@ -43,6 +56,8 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
         {
             // TODO:
         }
+
+        public void SetCursorVisible(bool isVisible) => _cursor.SetVisibility(isVisible);
 
         public void Dispose() => _subscriptions.Dispose();
     }

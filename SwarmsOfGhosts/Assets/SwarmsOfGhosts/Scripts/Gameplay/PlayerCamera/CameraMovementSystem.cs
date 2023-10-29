@@ -12,7 +12,7 @@ namespace SwarmsOfGhosts.Gameplay.PlayerCamera
     [UpdateAfter(typeof(TransformSystemGroup))]
     public partial class CameraMovementSystem : SystemBase
     {
-        private PauseSystem _pauseSystem;
+        private PauseFacadeSystem _pauseSystem;
         private Entity _player;
 
         private Camera _camera;
@@ -23,7 +23,7 @@ namespace SwarmsOfGhosts.Gameplay.PlayerCamera
         [BurstCompile]
         protected override void OnCreate()
         {
-            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+            _pauseSystem = World.GetOrCreateSystem<PauseFacadeSystem>();
 
             RequireSingletonForUpdate<IsPlayingTag>();
             RequireSingletonForUpdate<PlayerTag>();

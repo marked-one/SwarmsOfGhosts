@@ -36,27 +36,31 @@ namespace SwarmsOfGhosts.UI.InGame.Popups.NextLevel
                 .Subscribe(value => _scoreLabel.text = $"{_scorePrefix}{value}")
                 .AddTo(this);
 
-            _viewModel.IsLevelCompleted
+            _viewModel.IsVisible
                 .Where(value => value)
                 .Delay(TimeSpan.FromSeconds(_popupDelaySeconds))
-                .Subscribe(value => _contents.SetActive(value))
+                .Subscribe(SetVisible)
                 .AddTo(this);
 
-            _viewModel.IsLevelCompleted
+            _viewModel.IsVisible
                 .Where(value => !value)
-                .Subscribe(value => _contents.SetActive(value))
+                .Subscribe(SetVisible)
                 .AddTo(this);
+
+            void SetVisible(bool isVisible)
+            {
+                _contents.SetActive(isVisible);
+                _viewModel.SetCursorVisible(isVisible);
+            }
 
             _nextButton.onClick.AddListener(() =>
             {
                 _nextButton.enabled = false;
+
                 _viewModel
                     .StartNextLevel()
                     .ContinueWith(() => _nextButton.enabled = true)
-                    .Forget(exception =>
-                    {
-                        Debug.LogException(exception);
-                    });
+                    .Forget(exception => { Debug.LogException(exception); });
             });
 
             _quitButton.onClick.AddListener(_viewModel.OpenMainMenuScene);

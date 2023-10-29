@@ -9,13 +9,11 @@ namespace SwarmsOfGhosts.UI
     {
         [SerializeField] private EventSystem _eventSystemPrefab;
 
-        public override void InstallBindings()
-        {
+        public override void InstallBindings() =>
             Container
                 .Bind<EventSystem>()
                 .FromComponentInNewPrefab(_eventSystemPrefab)
                 .AsSingle()
                 .NonLazy();
-        }
     }
 }

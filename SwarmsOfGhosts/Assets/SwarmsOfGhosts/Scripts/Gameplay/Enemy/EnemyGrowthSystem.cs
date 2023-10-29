@@ -20,7 +20,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
     [UpdateBefore(typeof(BuildPhysicsWorld))]
     public partial class EnemyGrowthSystem : SystemBase
     {
-        private PauseSystem _pauseSystem;
+        private PauseFacadeSystem _pauseSystem;
         private EnemySpawnSystem _spawnSystem;
         private RandomSystem _randomSystem;
         private StepPhysicsWorld _stepPhysicsWorld;
@@ -29,7 +29,7 @@ namespace SwarmsOfGhosts.Gameplay.Enemy
         [BurstCompile]
         protected override void OnCreate()
         {
-            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+            _pauseSystem = World.GetOrCreateSystem<PauseFacadeSystem>();
             _spawnSystem = World.GetOrCreateSystem<EnemySpawnSystem>();
             _randomSystem = World.GetOrCreateSystem<RandomSystem>();
             _stepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();

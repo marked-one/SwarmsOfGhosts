@@ -12,12 +12,12 @@ namespace SwarmsOfGhosts.Gameplay.Player
     [UpdateInGroup(typeof(TransformSystemGroup))]
     public partial class PlayerMovementSystem : SystemBase
     {
-        private PauseSystem _pauseSystem;
+        private PauseFacadeSystem _pauseSystem;
 
         [BurstCompile]
         protected override void OnCreate()
         {
-            _pauseSystem = World.GetOrCreateSystem<PauseSystem>();
+            _pauseSystem = World.GetOrCreateSystem<PauseFacadeSystem>();
 
             var enemyQuery = GetEntityQuery(ComponentType.ReadOnly<EnemyTag>());
             RequireForUpdate(enemyQuery);

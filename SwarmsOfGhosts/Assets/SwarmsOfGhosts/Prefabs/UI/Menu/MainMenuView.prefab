@@ -216,6 +216,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2040e19d383445f59e5c1b2cd1f54526, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _player: {fileID: 293714061626851407}
+  _enemy: {fileID: 7210170739946861451}
   _playButton: {fileID: 7081328670322726399}
   _settingsButton: {fileID: 7081328671362133706}
   _quitButton: {fileID: 7081328670196285213}
@@ -1556,7 +1558,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d478ab90e3acfe24e9c1cfac8bae74c6, type: 2}
+  - {fileID: 2100000, guid: 6900336286003394fa596bfec1458c0a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -46,6 +46,24 @@ namespace InputSystem
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FPS"",
+                    ""type"": ""Button"",
+                    ""id"": ""0937f8ea-33c2-4290-a12d-8844bf8b4277"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""EditorBack"",
+                    ""type"": ""Button"",
+                    ""id"": ""b2431d99-a42d-4256-8ab2-2284d9d24990"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -112,6 +130,28 @@ namespace InputSystem
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
                     ""action"": ""Back"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dd9641d9-2713-41d5-9cac-793a89a1f545"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""FPS"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ce00b7c5-f9b2-40d5-84c4-0c090dd78eff"",
+                    ""path"": ""<Keyboard>/backquote"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""EditorBack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -652,6 +692,8 @@ namespace InputSystem
             m_Keyboard = asset.FindActionMap("Keyboard", throwIfNotFound: true);
             m_Keyboard_WASD = m_Keyboard.FindAction("WASD", throwIfNotFound: true);
             m_Keyboard_Back = m_Keyboard.FindAction("Back", throwIfNotFound: true);
+            m_Keyboard_FPS = m_Keyboard.FindAction("FPS", throwIfNotFound: true);
+            m_Keyboard_EditorBack = m_Keyboard.FindAction("EditorBack", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -725,12 +767,16 @@ namespace InputSystem
         private IKeyboardActions m_KeyboardActionsCallbackInterface;
         private readonly InputAction m_Keyboard_WASD;
         private readonly InputAction m_Keyboard_Back;
+        private readonly InputAction m_Keyboard_FPS;
+        private readonly InputAction m_Keyboard_EditorBack;
         public struct KeyboardActions
         {
             private @InputActions m_Wrapper;
             public KeyboardActions(@InputActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @WASD => m_Wrapper.m_Keyboard_WASD;
             public InputAction @Back => m_Wrapper.m_Keyboard_Back;
+            public InputAction @FPS => m_Wrapper.m_Keyboard_FPS;
+            public InputAction @EditorBack => m_Wrapper.m_Keyboard_EditorBack;
             public InputActionMap Get() { return m_Wrapper.m_Keyboard; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -746,6 +792,12 @@ namespace InputSystem
                     @Back.started -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnBack;
                     @Back.performed -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnBack;
                     @Back.canceled -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnBack;
+                    @FPS.started -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnFPS;
+                    @FPS.performed -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnFPS;
+                    @FPS.canceled -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnFPS;
+                    @EditorBack.started -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnEditorBack;
+                    @EditorBack.performed -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnEditorBack;
+                    @EditorBack.canceled -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnEditorBack;
                 }
                 m_Wrapper.m_KeyboardActionsCallbackInterface = instance;
                 if (instance != null)
@@ -756,6 +808,12 @@ namespace InputSystem
                     @Back.started += instance.OnBack;
                     @Back.performed += instance.OnBack;
                     @Back.canceled += instance.OnBack;
+                    @FPS.started += instance.OnFPS;
+                    @FPS.performed += instance.OnFPS;
+                    @FPS.canceled += instance.OnFPS;
+                    @EditorBack.started += instance.OnEditorBack;
+                    @EditorBack.performed += instance.OnEditorBack;
+                    @EditorBack.canceled += instance.OnEditorBack;
                 }
             }
         }
@@ -878,6 +936,8 @@ namespace InputSystem
         {
             void OnWASD(InputAction.CallbackContext context);
             void OnBack(InputAction.CallbackContext context);
+            void OnFPS(InputAction.CallbackContext context);
+            void OnEditorBack(InputAction.CallbackContext context);
         }
         public interface IUIActions
         {
