@@ -153,7 +153,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scriptableObjectInstallers:
-  - {fileID: 11400000, guid: 9ea30f48b9a55024c91af3308fa51441, type: 2}
   - {fileID: 11400000, guid: 5e4c6165ab29a544abb65ff39e51e946, type: 2}
   - {fileID: 11400000, guid: 2c835b789221e8e4d8e267ba9aefa07b, type: 2}
   - {fileID: 11400000, guid: ebc4be775f935e745a35a85da0b1eca8, type: 2}
@@ -163,8 +162,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 940dc34c1816cd848970f531fa74ed79, type: 2}
   - {fileID: 11400000, guid: a0b30fcee2446bd49b9fee6bdd984870, type: 2}
   - {fileID: 11400000, guid: 352efd633de020b42a1fb4017e129cd0, type: 2}
-  - {fileID: 11400000, guid: cede84a88861b4c48bc2d8b9d91bf75c, type: 2}
   - {fileID: 11400000, guid: 3d4bce62e0b498640b959c40383e7947, type: 2}
+  - {fileID: 11400000, guid: 5ed0689530fbc1f448cec7a68f0532bd, type: 2}
+  - {fileID: 11400000, guid: aaec92344ae2fe4488d1cfe6f20dc959, type: 2}
   _monoInstallers: []
   _installerPrefabs: []
   _findSiblingMonoInstallers: 0

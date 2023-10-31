@@ -1,0 +1,9 @@
+{
+  "name": "com.vladimirklubkov.scenemanagement.tests",
+  "version": "1.0.0",
+  "displayName": "SceneManagementTests",
+  "author": {
+    "name": "Vladimir Klubkov",
+    "url": "https://www.linkedin.com/in/vklubkov"
+  }
+}

@@ -137,6 +137,13 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.nuget.newtonsoft-json": {
+      "version": "3.2.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
     "com.unity.physics": {
       "version": "0.51.1-preview.21",
       "depth": 0,
@@ -328,6 +335,55 @@
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
       }
+    },
+    "com.vladimirklubkov.scenemanagement": {
+      "version": "file:SceneManagement",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.vladimirklubkov.scenemanagement.tests": {
+      "version": "file:SceneManagementTests",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.vladimirklubkov.scenemanagementinterfaces": {
+      "version": "file:SceneManagementInterfaces",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.vladimirklubkov.upmpackagecreator": {
+      "version": "https://github.com/marked-one/UPMPackageCreator.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+      },
+      "hash": "fc4cc9949538f0497b7a97f07cbb6185859da52d"
+    },
+    "com.vladimirklubkov.utilities": {
+      "version": "file:Utilities",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "nuget.castle-core": {
+      "version": "1.0.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "nuget.moq": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "nuget.castle-core": "1.0.1"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
