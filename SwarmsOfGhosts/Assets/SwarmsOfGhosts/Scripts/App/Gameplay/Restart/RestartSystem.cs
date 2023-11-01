@@ -33,7 +33,7 @@ namespace SwarmsOfGhosts.App.Gameplay.Restart
                     break;
 
                 // We need at least a 1 frame a delay before starting
-                // again, to allow systems free their resources.
+                // again, this allows systems to free their resources.
                 case _framesForRestart:
                     CreateIsPlayingEntity();
                     _framesCounter = 0;

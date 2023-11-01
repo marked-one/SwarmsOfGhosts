@@ -21,7 +21,7 @@ namespace SwarmsOfGhosts.App.UI.Menu.SettingsMenu
     {
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
 
-        private UniTaskCompletionSource _menuOpenCompletionSource;
+        private UniTaskCompletionSource _settingsMenuCompletionSource;
 
         private readonly ReactiveProperty<bool> _isVisible = new ReactiveProperty<bool>();
         public IReadOnlyReactiveProperty<bool> IsVisible => _isVisible;
@@ -30,20 +30,20 @@ namespace SwarmsOfGhosts.App.UI.Menu.SettingsMenu
         private SettingsMenuViewModel(IMenuInput menuInput)
         {
             menuInput.Back
-                .Subscribe(_ => _menuOpenCompletionSource?.TrySetResult())
+                .Subscribe(_ => _settingsMenuCompletionSource?.TrySetResult())
                 .AddTo(_subscriptions);
         }
 
         public async UniTask Open()
         {
             _isVisible.Value = true;
-            _menuOpenCompletionSource = new UniTaskCompletionSource();
-            await _menuOpenCompletionSource.Task;
-            _menuOpenCompletionSource = null;
+            _settingsMenuCompletionSource = new UniTaskCompletionSource();
+            await _settingsMenuCompletionSource.Task;
+            _settingsMenuCompletionSource = null;
             _isVisible.Value = false;
         }
 
-        public void Close() => _menuOpenCompletionSource?.TrySetResult();
+        public void Close() => _settingsMenuCompletionSource?.TrySetResult();
         public void Dispose() => _subscriptions.Dispose();
     }
 }

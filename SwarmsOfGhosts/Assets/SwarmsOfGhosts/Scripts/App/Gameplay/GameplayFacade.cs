@@ -6,19 +6,15 @@ using SwarmsOfGhosts.App.Gameplay.Player;
 using SwarmsOfGhosts.App.Gameplay.Restart;
 using UniRx;
 using Unity.Entities;
+using Unity.Scenes;
 using UnityEngine;
 using Zenject;
 
 namespace SwarmsOfGhosts.App.Gameplay
 {
-    public interface IMovable
+    public interface ISubSceneLoader
     {
-        public Vector2 Movement { set; }
-    }
-
-    public interface IPlayerPosition
-    {
-        public IObservable<Vector3> PlayerPosition { get; }
+        public UniTask LoadSubScene();
     }
 
     public interface IRestartable
@@ -29,6 +25,16 @@ namespace SwarmsOfGhosts.App.Gameplay
     public interface IPausable
     {
         public bool IsPaused { set; }
+    }
+
+    public interface IMovable
+    {
+        public Vector2 Movement { set; }
+    }
+
+    public interface IPlayerPosition
+    {
+        public IObservable<Vector3> PlayerPosition { get; }
     }
 
     public interface IPlayerHealth
@@ -49,12 +55,13 @@ namespace SwarmsOfGhosts.App.Gameplay
     }
 
     public class GameplayFacade : IInitializable, IDisposable,
-        IRestartable, IPausable, IMovable, IPlayerPosition, IPlayerHealth, IInfestation, IEnemySpawn
+        ISubSceneLoader, IRestartable, IPausable, IMovable, IPlayerPosition, IPlayerHealth, IInfestation, IEnemySpawn
     {
         private readonly RestartSystem _restartSystem;
         private readonly PlayerInputSystem _playerInputSystem;
         private readonly EnemySpawnSystem _enemySpawnSystem;
         private readonly PauseSystem _pauseSystem;
+        private readonly SceneSystem _sceneSystem;
 
         public IReadOnlyReactiveProperty<float> CurrentPlayerHealth { get; }
         public IReadOnlyReactiveProperty<float> MaxPlayerHealth { get; }
@@ -80,10 +87,18 @@ namespace SwarmsOfGhosts.App.Gameplay
             set => _pauseSystem.IsPaused = value;
         }
 
+        private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
+
+        private readonly SubScene _subScene;
+
         [Inject]
-        private GameplayFacade()
+        private GameplayFacade(SubScene subScene)
         {
+            _subScene = subScene;
+
             var world = World.DefaultGameObjectInjectionWorld;
+
+            _sceneSystem = world.GetOrCreateSystem<SceneSystem>();
 
             _restartSystem = world.GetOrCreateSystem<RestartSystem>();
             _pauseSystem = world.GetOrCreateSystem<PauseSystem>();
@@ -103,9 +118,19 @@ namespace SwarmsOfGhosts.App.Gameplay
         }
 
         public void Initialize() => _pauseSystem.IsPaused = false;
+
+        public async UniTask LoadSubScene()
+        {
+            var handle = _sceneSystem.LoadSceneAsync(_subScene.SceneGUID);
+            await UniTask.WaitUntil(() => _sceneSystem.IsSceneLoaded(handle));
+        }
+
         public UniTask Restart() => _restartSystem.Restart();
 
-        // Cleanup when leaving gameplay scene.
-        public void Dispose() => _restartSystem.DestroyIsPlayingEntity();
+        public void Dispose()
+        {
+            _restartSystem.DestroyIsPlayingEntity();
+            _subscriptions.Dispose();
+        }
     }
 }

@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1098797430}
   - component: {fileID: 1098797429}
+  - component: {fileID: 1098797431}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -154,18 +155,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scriptableObjectInstallers:
   - {fileID: 11400000, guid: 5e4c6165ab29a544abb65ff39e51e946, type: 2}
+  - {fileID: 11400000, guid: 5ed0689530fbc1f448cec7a68f0532bd, type: 2}
+  - {fileID: 11400000, guid: aaec92344ae2fe4488d1cfe6f20dc959, type: 2}
+  - {fileID: 11400000, guid: 3d4bce62e0b498640b959c40383e7947, type: 2}
+  - {fileID: 11400000, guid: 1d8fdb2feb5d2b945b7c8ce0a13a5d0a, type: 2}
   - {fileID: 11400000, guid: 2c835b789221e8e4d8e267ba9aefa07b, type: 2}
   - {fileID: 11400000, guid: ebc4be775f935e745a35a85da0b1eca8, type: 2}
+  - {fileID: 11400000, guid: 352efd633de020b42a1fb4017e129cd0, type: 2}
   - {fileID: 11400000, guid: 73c9092ba860b16459e00d565491aac3, type: 2}
-  - {fileID: 11400000, guid: 1d8fdb2feb5d2b945b7c8ce0a13a5d0a, type: 2}
   - {fileID: 11400000, guid: 3e36f497a63ac2c4f8b4a71a10f7011b, type: 2}
   - {fileID: 11400000, guid: 940dc34c1816cd848970f531fa74ed79, type: 2}
   - {fileID: 11400000, guid: a0b30fcee2446bd49b9fee6bdd984870, type: 2}
-  - {fileID: 11400000, guid: 352efd633de020b42a1fb4017e129cd0, type: 2}
-  - {fileID: 11400000, guid: 3d4bce62e0b498640b959c40383e7947, type: 2}
-  - {fileID: 11400000, guid: 5ed0689530fbc1f448cec7a68f0532bd, type: 2}
-  - {fileID: 11400000, guid: aaec92344ae2fe4488d1cfe6f20dc959, type: 2}
-  _monoInstallers: []
+  _monoInstallers:
+  - {fileID: 1098797431}
   _installerPrefabs: []
   _findSiblingMonoInstallers: 0
   _autoRun: 1
@@ -198,6 +200,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1098797431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098797428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 083b116b3fc5f774891ef0669494c815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _subScene: {fileID: 1254573122}
 --- !u!1 &1254573121
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,7 +244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _SceneAsset: {fileID: 102900000, guid: 89d762b4d242d414cace685f836a3302, type: 3}
   _HierarchyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  AutoLoadScene: 1
+  AutoLoadScene: 0
   _SceneGUID:
     Value:
       x: 1260813720
