@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb423fdf4f8f0164794b10cfb2e052f5, type: 3}
-  m_Name: MenuCameraInstaller
+  m_Script: {fileID: 11500000, guid: 43507835509c6ea4dbdd7729b2c6a23a, type: 3}
+  m_Name: LoadingScreenInstaller
   m_EditorClassIdentifier: 
-  _cameraPrefab: {fileID: 6140589902611809940, guid: 427168b484db2134b9190207e82f1b5c, type: 3}
+  _loadingScreenViewPrefab: {fileID: 2380346718594781279, guid: cee658078da87d14c86b363453491911, type: 3}
