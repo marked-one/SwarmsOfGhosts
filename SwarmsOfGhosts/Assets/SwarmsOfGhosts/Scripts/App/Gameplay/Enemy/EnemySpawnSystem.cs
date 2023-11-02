@@ -1,6 +1,7 @@
 ﻿using SwarmsOfGhosts.App.Gameplay.Environment;
+using SwarmsOfGhosts.App.Gameplay.Randomize;
 using SwarmsOfGhosts.App.Gameplay.Restart;
-using SwarmsOfGhosts.App.Gameplay.Utilities;
+using UniRx;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -36,10 +37,15 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
         private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
 
         private EntityQuery _spawnsQuery;
+        private EntityQuery _enemyQuery;
+
         public NativeArray<int> ColliderCacheSizes { get; private set; }
         public NativeArray<BlobAssetReference<Collider>> ColliderCaches { get; private set; }
 
         public int GridSize { get; set; }
+
+        private readonly ReactiveProperty<bool> _areEnemiesAlive = new ReactiveProperty<bool>();
+        public IReadOnlyReactiveProperty<bool> AreEnemiesAlive => _areEnemiesAlive;
 
         [BurstCompile]
         protected override void OnCreate()
@@ -55,6 +61,8 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
             _spawnsQuery = GetEntityQuery(
                 ComponentType.ReadOnly<EnemySettings>(),
                 ComponentType.ReadOnly<EnemySpawnTag>());
+
+            _enemyQuery = GetEntityQuery(ComponentType.ReadOnly<EnemyTag>());
 
             RequireSingletonForUpdate<IsPlayingTag>();
         }
@@ -303,7 +311,8 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
         }
 
         [BurstCompile]
-        protected override void OnUpdate() { }
+        protected override void OnUpdate() =>
+            _areEnemiesAlive.Value = _enemyQuery.ToEntityArray(Allocator.Temp).Length > 0;
 
         [BurstCompile]
         protected override void OnStopRunning()

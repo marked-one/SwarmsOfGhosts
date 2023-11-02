@@ -28,6 +28,7 @@ namespace SwarmsOfGhosts.App.Gameplay.Player
             var enemyQuery = GetEntityQuery(ComponentType.ReadOnly<EnemyTag>());
             RequireForUpdate(enemyQuery);
 
+            RequireSingletonForUpdate<PlayerTag>();
             RequireSingletonForUpdate<IsPlayingTag>();
         }
 

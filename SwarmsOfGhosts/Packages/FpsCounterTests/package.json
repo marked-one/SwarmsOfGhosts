@@ -1,0 +1,9 @@
+{
+  "name": "com.vladimirklubkov.fpscounter.tests",
+  "version": "1.0.0",
+  "displayName": "FpsCounterTests",
+  "author": {
+    "name": "Vladimir Klubkov",
+    "url": "https://www.linkedin.com/in/vklubkov"
+  }
+}

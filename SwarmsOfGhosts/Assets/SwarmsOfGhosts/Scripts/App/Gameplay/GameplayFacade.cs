@@ -37,6 +37,11 @@ namespace SwarmsOfGhosts.App.Gameplay
         public IObservable<Vector3> PlayerPosition { get; }
     }
 
+    public interface IPlayer
+    {
+        public IReadOnlyReactiveProperty<bool> IsPlayerAlive { get; }
+    }
+
     public interface IPlayerHealth
     {
         public IReadOnlyReactiveProperty<float> CurrentPlayerHealth { get; }
@@ -49,13 +54,19 @@ namespace SwarmsOfGhosts.App.Gameplay
         public IReadOnlyReactiveProperty<float> MaxInfestation { get; }
     }
 
+    public interface IEnemies
+    {
+        public IReadOnlyReactiveProperty<bool> AreEnemiesAlive { get; }
+    }
+
     public interface IEnemySpawn
     {
         public int EnemyGridSize { get; set; }
     }
 
     public class GameplayFacade : IInitializable, IDisposable,
-        ISubSceneLoader, IRestartable, IPausable, IMovable, IPlayerPosition, IPlayerHealth, IInfestation, IEnemySpawn
+        ISubSceneLoader, IRestartable, IPausable, IMovable, IPlayerPosition,
+        IPlayer, IPlayerHealth, IInfestation, IEnemySpawn, IEnemies
     {
         private readonly RestartSystem _restartSystem;
         private readonly PlayerInputSystem _playerInputSystem;
@@ -68,6 +79,9 @@ namespace SwarmsOfGhosts.App.Gameplay
 
         public IReadOnlyReactiveProperty<float> CurrentInfestation { get; }
         public IReadOnlyReactiveProperty<float> MaxInfestation { get; }
+
+        public IReadOnlyReactiveProperty<bool> IsPlayerAlive { get; }
+        public IReadOnlyReactiveProperty<bool> AreEnemiesAlive { get; }
 
         public IObservable<Vector3> PlayerPosition { get; }
 
@@ -104,17 +118,23 @@ namespace SwarmsOfGhosts.App.Gameplay
             _pauseSystem = world.GetOrCreateSystem<PauseSystem>();
 
             _playerInputSystem = world.GetOrCreateSystem<PlayerInputSystem>();
+
             var playerHealthFacadeSystem = world.GetOrCreateSystem<PlayerHealthSystem>();
             CurrentPlayerHealth = playerHealthFacadeSystem.Current;
             MaxPlayerHealth = playerHealthFacadeSystem.Max;
+
+            var playerSpawnSystem = world.GetOrCreateSystem<PlayerSpawnSystem>();
+            IsPlayerAlive = playerSpawnSystem.IsPlayerAlive;
 
             var playerMovementSystem = world.GetOrCreateSystem<PlayerMovementSystem>();
             PlayerPosition = playerMovementSystem.Position;
 
             var enemyHealthFacadeSystem = world.GetOrCreateSystem<EnemyHealthSystem>();
-            _enemySpawnSystem = world.GetOrCreateSystem<EnemySpawnSystem>();
             CurrentInfestation = enemyHealthFacadeSystem.Current;
             MaxInfestation = enemyHealthFacadeSystem.Max;
+
+            _enemySpawnSystem = world.GetOrCreateSystem<EnemySpawnSystem>();
+            AreEnemiesAlive = _enemySpawnSystem.AreEnemiesAlive;
         }
 
         public void Initialize() => _pauseSystem.IsPaused = false;

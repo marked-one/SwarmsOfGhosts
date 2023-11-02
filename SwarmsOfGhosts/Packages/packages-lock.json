@@ -336,6 +336,24 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "com.vladimirklubkov.fpscounter": {
+      "version": "file:FpsCounter",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.vladimirklubkov.fpscounter.tests": {
+      "version": "file:FpsCounterTests",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.vladimirklubkov.fpscounterinterfaces": {
+      "version": "file:FpsCounterInterfaces",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.vladimirklubkov.scenemanagement": {
       "version": "file:SceneManagement",
       "depth": 0,

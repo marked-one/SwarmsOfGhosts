@@ -1,6 +1,8 @@
-﻿using SwarmsOfGhosts.App.Gameplay.Restart;
-using SwarmsOfGhosts.App.Gameplay.Utilities;
+﻿using SwarmsOfGhosts.App.Gameplay.Randomize;
+using SwarmsOfGhosts.App.Gameplay.Restart;
+using UniRx;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
@@ -16,6 +18,11 @@ namespace SwarmsOfGhosts.App.Gameplay.Player
         private BeginSimulationEntityCommandBufferSystem _beginSimulationEntityCommandBufferSystem;
         private EndSimulationEntityCommandBufferSystem _endSimulationEntityCommandBufferSystem;
 
+        private EntityQuery _playerQuery;
+
+        private readonly ReactiveProperty<bool> _isPlayerAlive = new ReactiveProperty<bool>();
+        public IReadOnlyReactiveProperty<bool> IsPlayerAlive => _isPlayerAlive;
+
         [BurstCompile]
         protected override void OnCreate()
         {
@@ -26,6 +33,8 @@ namespace SwarmsOfGhosts.App.Gameplay.Player
 
             _endSimulationEntityCommandBufferSystem =
                 World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+
+            _playerQuery = GetEntityQuery(ComponentType.ReadOnly<PlayerTag>());
 
             RequireSingletonForUpdate<IsPlayingTag>();
         }
@@ -103,7 +112,8 @@ namespace SwarmsOfGhosts.App.Gameplay.Player
         }
 
         [BurstCompile]
-        protected override void OnUpdate() { }
+        protected override void OnUpdate() =>
+            _isPlayerAlive.Value = _playerQuery.ToEntityArray(Allocator.Temp).Length > 0;
 
         [BurstCompile]
         protected override void OnStopRunning()

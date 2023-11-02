@@ -1,5 +1,5 @@
 ﻿using SceneManagement;
-using SwarmsOfGhosts.App;
+using SwarmsOfGhosts.App.Loading;
 using UnityEngine;
 using Zenject;
 

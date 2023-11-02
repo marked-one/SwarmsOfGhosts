@@ -1,5 +1,5 @@
-﻿using SwarmsOfGhosts.App.Gameplay.Restart;
-using SwarmsOfGhosts.App.Gameplay.Utilities;
+﻿using SwarmsOfGhosts.App.Gameplay.Randomize;
+using SwarmsOfGhosts.App.Gameplay.Restart;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;

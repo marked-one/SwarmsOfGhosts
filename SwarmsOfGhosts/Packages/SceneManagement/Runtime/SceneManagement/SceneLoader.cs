@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Utilities.Extensions;
+using Zenject;
 
 namespace SceneManagement
 {
@@ -11,6 +12,7 @@ namespace SceneManagement
 
         private readonly IUnitySceneManager _unitySceneManager;
 
+        [Inject]
         private SceneLoader(IUnitySceneManager unitySceneManager)
         {
             if (unitySceneManager == null)
