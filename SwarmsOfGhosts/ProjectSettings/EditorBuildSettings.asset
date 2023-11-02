@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/SwarmsOfGhosts/Scenes/Menu/MainMenu.unity
+    path: Assets/SwarmsOfGhosts/Scenes/MainMenu/MainMenu.unity
     guid: 7759d02e2c99af04290092e305f6f722
   - enabled: 1
     path: Assets/SwarmsOfGhosts/Scenes/Gameplay/Gameplay.unity

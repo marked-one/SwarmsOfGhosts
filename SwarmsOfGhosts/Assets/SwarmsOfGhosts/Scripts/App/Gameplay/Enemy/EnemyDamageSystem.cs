@@ -1,8 +1,8 @@
-﻿using SwarmsOfGhosts.App.Gameplay.Pause;
+﻿using SwarmsOfGhosts.App.Gameplay.Destruction;
+using SwarmsOfGhosts.App.Gameplay.Pause;
 using SwarmsOfGhosts.App.Gameplay.Player;
 using SwarmsOfGhosts.App.Gameplay.Projectile;
 using SwarmsOfGhosts.App.Gameplay.Restart;
-using SwarmsOfGhosts.App.Gameplay.Utilities;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;

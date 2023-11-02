@@ -15,9 +15,9 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
         private PauseSystem _pauseSystem;
 
         private readonly ReactiveProperty<float> _current = new ReactiveProperty<float>();
-        private readonly ReactiveProperty<float> _max = new ReactiveProperty<float>();
-
         public IReadOnlyReactiveProperty<float> Current => _current;
+
+        private readonly ReactiveProperty<float> _max = new ReactiveProperty<float>();
         public IReadOnlyReactiveProperty<float> Max => _max;
 
         [BurstCompile]

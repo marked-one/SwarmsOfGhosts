@@ -32,7 +32,7 @@ namespace SwarmsOfGhosts.App.Gameplay.Restart
                     DestroyIsPlayingEntity();
                     break;
 
-                // We need at least a 1 frame a delay before starting
+                // We need at least 1 frame of a delay before starting
                 // again, this allows systems to free their resources.
                 case _framesForRestart:
                     CreateIsPlayingEntity();

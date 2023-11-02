@@ -1,0 +1,31 @@
+{
+    "name": "VladimirKlubkov.Editor.FpsCounter.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:a2f2239355369ba4fb6909aeaa41def5",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:358c57019c31dfd42818f4d2f04cb548",
+        "GUID:49558b15b772a2c438d2d2e3b5aff9ea",
+        "GUID:d6799d300be65c548937a5da8cfa8884"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Moq.dll",
+        "Zenject-usage.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

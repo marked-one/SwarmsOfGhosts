@@ -71,12 +71,15 @@ namespace SceneManagement.Tests
         protected abstract T SceneNameA { get; }
         protected abstract T SceneNameB { get; }
 
+        private const string _sceneManagerIsNull = "SceneLoader_SceneManagerIsNull";
+        private const string _sceneManagerIsValid = "SceneLoader_SceneManagerIsValid";
+
         [SetUp]
         public void CommonInstall()
         {
             Container
                 .Bind<SceneLoader<T>>()
-                .WithId("SceneLoader_SceneManagerIsNull")
+                .WithId(_sceneManagerIsNull)
                 .AsTransient()
                 .WithArgumentsExplicit(InjectUtil.CreateArgListExplicit<IUnitySceneManager>(null));
 
@@ -84,7 +87,7 @@ namespace SceneManagement.Tests
 
             Container
                 .Bind<SceneLoader<T>>()
-                .WithId("SceneLoader_SceneManagerIsValid")
+                .WithId(_sceneManagerIsValid)
                 .AsTransient()
                 .WithArgumentsExplicit(InjectUtil.CreateArgListExplicit(_sceneManagerMock.Object));
         }
@@ -92,16 +95,16 @@ namespace SceneManagement.Tests
         [Test]
         public void SceneLoader_Throws_IfSceneManagerAdapterIsNull() =>
             Assert.Throws<ZenjectException>(() =>
-                Container.ResolveId<SceneLoader<T>>("SceneLoader_SceneManagerIsNull"));
+                Container.ResolveId<SceneLoader<T>>(_sceneManagerIsNull));
 
         [Test]
         public void SceneLoader_DoesntThrow_IfSceneManagerAdapterIsNotNull() =>
-            Assert.DoesNotThrow(() => Container.ResolveId<SceneLoader<T>>("SceneLoader_SceneManagerIsValid"));
+            Assert.DoesNotThrow(() => Container.ResolveId<SceneLoader<T>>(_sceneManagerIsValid));
 
         [Test]
         public void SceneLoader_LoadThrows_IfSceneNameIsDefault()
         {
-            var sceneLoader = Container.ResolveId<SceneLoader<T>>("SceneLoader_SceneManagerIsValid");
+            var sceneLoader = Container.ResolveId<SceneLoader<T>>(_sceneManagerIsValid);
             AssertHelpers.ThrowsAsync<ArgumentException>(() => sceneLoader.Load(default));
             AssertHelpers.ThrowsAsync<ArgumentException>(() => sceneLoader.Load(SceneNameDefault));
         }
@@ -109,7 +112,7 @@ namespace SceneManagement.Tests
         [Test]
         public void SceneLoader_LoadDoesntThrow_IfSceneNameIsValid()
         {
-            var sceneLoader = Container.ResolveId<SceneLoader<T>>("SceneLoader_SceneManagerIsValid");
+            var sceneLoader = Container.ResolveId<SceneLoader<T>>(_sceneManagerIsValid);
             AssertHelpers.DoesNotThrowAsync(() => sceneLoader.Load(SceneNameA));
         }
 
@@ -117,7 +120,7 @@ namespace SceneManagement.Tests
         public IEnumerator SceneLoader_CallsSceneManagerLoadOnce_IfSceneNameIsValid() =>
             UniTask.ToCoroutine(async () =>
             {
-                var sceneLoader = Container.ResolveId<SceneLoader<T>>("SceneLoader_SceneManagerIsValid");
+                var sceneLoader = Container.ResolveId<SceneLoader<T>>(_sceneManagerIsValid);
 
                 _sceneManagerMock
                     .Setup(sceneManager => sceneManager.LoadSceneAsync(SceneNameA.ToString()))
@@ -134,7 +137,7 @@ namespace SceneManagement.Tests
             SceneLoader_CallsSceneManagerLoadOnlyOnce_IfLoadingOfSameSceneIsRequestedInParallel() =>
             UniTask.ToCoroutine(async () =>
             {
-                var sceneLoader = Container.ResolveId<SceneLoader<T>>("SceneLoader_SceneManagerIsValid");
+                var sceneLoader = Container.ResolveId<SceneLoader<T>>(_sceneManagerIsValid);
 
                 _sceneManagerMock
                     .Setup(sceneManager => sceneManager.LoadSceneAsync(SceneNameA.ToString()))
@@ -155,7 +158,7 @@ namespace SceneManagement.Tests
             SceneLoader_CallsSceneManagerLoadOnceForEachLoadRequest_IfLoadingOfSameSceneIsRequestedInSequence() =>
             UniTask.ToCoroutine(async () =>
             {
-                var sceneLoader = Container.ResolveId<SceneLoader<T>>("SceneLoader_SceneManagerIsValid");
+                var sceneLoader = Container.ResolveId<SceneLoader<T>>(_sceneManagerIsValid);
 
                 _sceneManagerMock
                     .Setup(sceneManager => sceneManager.LoadSceneAsync(SceneNameA.ToString()))
@@ -173,7 +176,7 @@ namespace SceneManagement.Tests
             SceneLoader_CallsSceneManagerLoadOnceForEachLoadRequest_IfLoadingOfDifferentScenesIsRequestedInParallel() =>
             UniTask.ToCoroutine(async () =>
             {
-                var sceneLoader = Container.ResolveId<SceneLoader<T>>("SceneLoader_SceneManagerIsValid");
+                var sceneLoader = Container.ResolveId<SceneLoader<T>>(_sceneManagerIsValid);
 
                 _sceneManagerMock
                     .Setup(sceneManager => sceneManager.LoadSceneAsync(SceneNameA.ToString()))
@@ -199,7 +202,7 @@ namespace SceneManagement.Tests
             SceneLoader_CallsSceneManagerLoadOnceForEachLoadRequest_IfLoadingOfDifferentScenesIsRequestedInSequence() =>
             UniTask.ToCoroutine(async () =>
             {
-                var sceneLoader = Container.ResolveId<SceneLoader<T>>("SceneLoader_SceneManagerIsValid");
+                var sceneLoader = Container.ResolveId<SceneLoader<T>>(_sceneManagerIsValid);
 
                 _sceneManagerMock
                     .Setup(sceneManager => sceneManager.LoadSceneAsync(SceneNameA.ToString()))
