@@ -6,5 +6,6 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
     {
         public int Step;
         public float Limit;
+        public float Cooldown;
     }
 }

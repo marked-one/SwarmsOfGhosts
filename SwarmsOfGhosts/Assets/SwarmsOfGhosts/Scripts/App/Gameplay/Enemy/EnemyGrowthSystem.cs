@@ -1,5 +1,6 @@
 ﻿using SwarmsOfGhosts.App.Gameplay.Destruction;
 using SwarmsOfGhosts.App.Gameplay.Pause;
+using SwarmsOfGhosts.App.Gameplay.Player;
 using SwarmsOfGhosts.App.Gameplay.Randomize;
 using SwarmsOfGhosts.App.Gameplay.Restart;
 using Unity.Burst;
@@ -36,6 +37,7 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
             _stepPhysicsWorld = World.GetOrCreateSystem<StepPhysicsWorld>();
             _endSimulationEntityCommandBufferSystem = World.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
+            RequireSingletonForUpdate<PlayerTag>();
             RequireSingletonForUpdate<IsPlayingTag>();
         }
 
@@ -50,16 +52,35 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
             if (!collidersCacheSizes.IsCreated || !collidersCache.IsCreated)
                 return;
 
+            var deltaTime = Time.fixedDeltaTime;
+            Entities.ForEach((ref EnemyGrowthTimer timer, in EnemyGrowth growth) =>
+            {
+                if (timer.IsOver)
+                    return;
+
+                var waitTime = growth.Cooldown;
+                var time = timer.Value;
+                time += deltaTime;
+                if (time >= waitTime)
+                {
+                    timer.IsOver = true;
+                    timer.Value = 0f;
+                    return;
+                }
+
+                timer.Value = time;
+            }).ScheduleParallel();
+
             var random = _randomSystem.MainThreadRandom;
             var endSimulationCommandBuffer = _endSimulationEntityCommandBufferSystem.CreateCommandBuffer();
-
             Dependency = new TriggerPhysicsEventsJob
             {
                 Seed = random.NextInt(1, int.MaxValue),
                 EnemyGroup = GetComponentDataFromEntity<EnemyTag>(true),
                 SpawnIdGroup = GetComponentDataFromEntity<EnemySpawnId>(true),
-                GrowthGroup = GetComponentDataFromEntity<EnemyGrowth>(true),
                 DestroyGroup = GetComponentDataFromEntity<DestroyTag>(true),
+                GrowthGroup = GetComponentDataFromEntity<EnemyGrowth>(true),
+                GrowthTimerGroup = GetComponentDataFromEntity<EnemyGrowthTimer>(),
                 SpeedGroup = GetComponentDataFromEntity<EnemyMovementSpeed>(),
                 HealthGroup = GetComponentDataFromEntity<EnemyHealth>(),
                 DamageGroup = GetComponentDataFromEntity<EnemyDamage>(),
@@ -82,9 +103,9 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
 
             [ReadOnly] public ComponentDataFromEntity<EnemyTag> EnemyGroup;
             [ReadOnly] public ComponentDataFromEntity<EnemySpawnId> SpawnIdGroup;
-            [ReadOnly] public ComponentDataFromEntity<EnemyGrowth> GrowthGroup;
             [ReadOnly] public ComponentDataFromEntity<DestroyTag> DestroyGroup;
-
+            [ReadOnly] public ComponentDataFromEntity<EnemyGrowth> GrowthGroup;
+            public ComponentDataFromEntity<EnemyGrowthTimer> GrowthTimerGroup;
             public ComponentDataFromEntity<EnemyMovementSpeed> SpeedGroup;
             public ComponentDataFromEntity<EnemyHealth> HealthGroup;
             public ComponentDataFromEntity<EnemyDamage> DamageGroup;
@@ -108,6 +129,17 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
 
                 if (!isEntityAEnemy || !isEntityBEnemy)
                     return;
+
+                var timerA = GrowthTimerGroup[entityA];
+                var timerB = GrowthTimerGroup[entityB];
+                if (!timerA.IsOver || !timerB.IsOver)
+                    return;
+
+                timerA.IsOver = false;
+                GrowthTimerGroup[entityA] = timerA;
+
+                timerB.IsOver = false;
+                GrowthTimerGroup[entityB] = timerB;
 
                 var scaleA = ScaleGroup[entityA];
                 var scaleB = ScaleGroup[entityB];

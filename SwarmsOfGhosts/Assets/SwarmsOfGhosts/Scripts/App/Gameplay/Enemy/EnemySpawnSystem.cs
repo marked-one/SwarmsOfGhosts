@@ -269,8 +269,15 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
             beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
                 new EnemySpawnId { Value = entityInQueryIndex });
 
+            beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity, new EnemyGrowth
+            {
+                Step = enemySettings.GrowthStep,
+                Limit = enemySettings.GrowthLimit,
+                Cooldown = enemySettings.GrowthCooldown
+            });
+
             beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
-                new EnemyGrowth { Step = enemySettings.GrowthStep, Limit = enemySettings.GrowthLimit });
+                new EnemyGrowthTimer { Value = 0f, IsOver = true });
 
             beginSimulationCommandBuffer.AddComponent(entityInQueryIndex, entity,
                 new EnemyHealth { Value = enemySettings.Health, Max = enemySettings.Health });
