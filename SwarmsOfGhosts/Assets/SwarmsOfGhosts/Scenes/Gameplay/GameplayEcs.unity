@@ -370,7 +370,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61667f35eef4352b8593d908d090ab4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GridSize: 5
   Spread: 10
   HeadroomInCenter: 15
   Prefab: {fileID: 7836703176674702157, guid: c0662a04c76e38040a6f5aa13563245c, type: 3}
@@ -388,16 +387,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpeedRange:
     x: 6
-    y: 8.4
+    y: 7
   TransparencyRange:
     x: 0.3
     y: 0.7
   Scale: 1
-  GrowthStep: 15
+  GrowthStep: 50
   GrowthLimit: 5
+  GrowthCooldown: 3
   Health: 1
-  Damage: 0.025
-  DamageCooldown: 0.5
+  Damage: 0.1
+  DamageCooldown: 1
 --- !u!114 &1708870390
 MonoBehaviour:
   m_ObjectHideFlags: 0
