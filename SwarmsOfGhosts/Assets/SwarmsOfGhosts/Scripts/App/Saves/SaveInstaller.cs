@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Zenject;
 
-namespace SwarmsOfGhosts.App.MetaGame.Saves
+namespace SwarmsOfGhosts.App.Saves
 {
     [CreateAssetMenu(fileName = "SaveInstaller", menuName = "Installers/SaveInstaller")]
     public class SaveInstaller : ScriptableObjectInstaller<SaveInstaller>

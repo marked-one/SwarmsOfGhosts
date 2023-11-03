@@ -1,7 +1,7 @@
 using UnityEngine;
 using Zenject;
 
-namespace SwarmsOfGhosts.App.MetaGame.Levels
+namespace SwarmsOfGhosts.App.Gameplay.Levels
 {
     [CreateAssetMenu(fileName = "LevelsInstaller", menuName = "Installers/LevelsInstaller")]
     public class LevelsInstaller : ScriptableObjectInstaller<LevelsInstaller>

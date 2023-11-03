@@ -134,6 +134,9 @@ namespace SwarmsOfGhosts.App.Gameplay.Player
             }).ScheduleParallel();
 
             _endSimulationEntityCommandBufferSystem.AddJobHandleForProducer(Dependency);
+
+            _isPlayerAlive.Value = false;
+
         }
     }
 }

@@ -2,7 +2,7 @@
 using UnityEngine;
 using Zenject;
 
-namespace SwarmsOfGhosts.App.MetaGame.Saves
+namespace SwarmsOfGhosts.App.Saves
 {
     public interface ISave
     {

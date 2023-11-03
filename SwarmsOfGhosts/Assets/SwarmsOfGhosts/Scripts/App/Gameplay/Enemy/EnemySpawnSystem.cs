@@ -327,7 +327,6 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
                 endSimulationCommandBuffer.DestroyEntity(entityInQueryIndex, entity);
             }).ScheduleParallel();
 
-
             Entities.ForEach((Entity entity, int entityInQueryIndex, in BattleGroundTag _) =>
             {
                 endSimulationCommandBuffer.DestroyEntity(entityInQueryIndex, entity);
@@ -350,6 +349,8 @@ namespace SwarmsOfGhosts.App.Gameplay.Enemy
 
                 ColliderCaches.Dispose();
             }
+
+            _areEnemiesAlive.Value = false;
         }
     }
 }

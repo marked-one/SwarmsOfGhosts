@@ -1,11 +1,10 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
-using SwarmsOfGhosts.App.Gameplay;
-using SwarmsOfGhosts.App.MetaGame.Saves;
+using SwarmsOfGhosts.App.Saves;
 using UniRx;
 using Zenject;
 
-namespace SwarmsOfGhosts.App.MetaGame.Levels
+namespace SwarmsOfGhosts.App.Gameplay.Levels
 {
     public enum LevelState
     {
@@ -20,6 +19,7 @@ namespace SwarmsOfGhosts.App.MetaGame.Levels
         public IReadOnlyReactiveProperty<int> LevelScore { get; }
         public IReadOnlyReactiveProperty<LevelState> LevelState { get; }
         public UniTask StartNextLevel();
+        public void AbandonCurrentLevel();
     }
 
     public class LevelSwitcher : ILevelSwitcher, IInitializable, IDisposable
@@ -108,15 +108,6 @@ namespace SwarmsOfGhosts.App.MetaGame.Levels
                     UpdateLevelScore(_currentLevel - 1);
                     _levelState.Value = Levels.LevelState.GameOver;
                 }
-
-                void UpdateLevelScore(int value)
-                {
-                    var savedScore = _scoreSave.Score.Value;
-                    if (value > savedScore)
-                        _scoreSave.SaveScore(value);
-
-                    _levelScore.Value = value;
-                }
             }
         }
 
@@ -125,6 +116,17 @@ namespace SwarmsOfGhosts.App.MetaGame.Levels
             _enemySpawn.EnemyGridSize += _levelsConfig.EnemyGridStep;
             await _restartableLevel.Restart();
             _currentLevel++;
+        }
+
+        public void AbandonCurrentLevel() => UpdateLevelScore(_currentLevel - 1);
+
+        private void UpdateLevelScore(int value)
+        {
+            var savedScore = _scoreSave.Score.Value;
+            if (value > savedScore)
+                _scoreSave.SaveScore(value);
+
+            _levelScore.Value = value;
         }
 
         public void Dispose() => _subscriptions.Dispose();
