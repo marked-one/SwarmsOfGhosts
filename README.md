@@ -1,6 +1,6 @@
 # SwarmsOfGhosts
 
-![Game screenshot](Screenshot.png)
+![Game screenshot](screenshot.png)
 
 A simple example project made with Unity showcasing some advanced programming techniques: DI, MVVM, Reactive Programming, Unit Testing, async/await, DOTS ECS.
 
