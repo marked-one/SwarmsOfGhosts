@@ -1,6 +1,7 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using SceneManagement;
+using SwarmsOfGhosts.App.Gameplay.Levels;
 using SwarmsOfGhosts.App.Gameplay.MouseCursor;
 using SwarmsOfGhosts.App.Gameplay.Popups.GameCompleted;
 using SwarmsOfGhosts.App.Gameplay.Popups.GameOver;
@@ -32,6 +33,7 @@ namespace SwarmsOfGhosts.App.Gameplay.Popups.PauseMenu
         private readonly INextLevelPopup _nextLevelPopup;
         private readonly IGameOverPopup _gameOverPopup;
         private readonly IGameCompletedPopup _gameCompletedPopup;
+        private readonly ILevelSwitcher _levelSwitcher;
         private readonly ISceneLoader<SceneName> _sceneLoader;
 
         private IDisposable _menuInputSubscription;
@@ -42,7 +44,7 @@ namespace SwarmsOfGhosts.App.Gameplay.Popups.PauseMenu
         [Inject]
         private PauseMenuViewModel(IMenuInput menuInput, IPausable pausable, ISettingsMenu settingsMenu, ICursor cursor,
             INextLevelPopup nextLevelPopup, IGameOverPopup gameOverPopup, IGameCompletedPopup gameCompletedPopup,
-            ISceneLoader<SceneName> sceneLoader)
+            ILevelSwitcher levelSwitcher, ISceneLoader<SceneName> sceneLoader)
         {
             _menuInput = menuInput;
             _pausable = pausable;
@@ -51,6 +53,7 @@ namespace SwarmsOfGhosts.App.Gameplay.Popups.PauseMenu
             _nextLevelPopup = nextLevelPopup;
             _gameOverPopup = gameOverPopup;
             _gameCompletedPopup = gameCompletedPopup;
+            _levelSwitcher = levelSwitcher;
             _sceneLoader = sceneLoader;
             _menuInputSubscription = SubscribeToMenuInput();
         }
@@ -86,7 +89,12 @@ namespace SwarmsOfGhosts.App.Gameplay.Popups.PauseMenu
             _menuInputSubscription = SubscribeToMenuInput();
         }
 
-        public void OpenMainMenuScene() => _sceneLoader.Load(SceneName.MainMenu).Forget(e => Debug.LogException(e));
+        public void OpenMainMenuScene()
+        {
+            _levelSwitcher.AbandonCurrentLevel();
+            _sceneLoader.Load(SceneName.MainMenu).Forget(e => Debug.LogException(e));
+        }
+
         public void SetCursorVisible(bool isVisible) => _cursor.SetVisibility(isVisible);
         public void Dispose() => _menuInputSubscription?.Dispose();
     }

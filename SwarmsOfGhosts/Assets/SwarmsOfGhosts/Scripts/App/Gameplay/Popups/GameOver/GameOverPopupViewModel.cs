@@ -1,9 +1,9 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using SceneManagement;
+using SwarmsOfGhosts.App.Gameplay.Levels;
 using SwarmsOfGhosts.App.Gameplay.MouseCursor;
 using SwarmsOfGhosts.App.Loading;
-using SwarmsOfGhosts.App.MetaGame.Levels;
 using UniRx;
 using UnityEngine;
 using Zenject;

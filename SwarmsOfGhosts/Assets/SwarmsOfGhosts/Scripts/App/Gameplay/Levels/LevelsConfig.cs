@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SwarmsOfGhosts.App.MetaGame.Levels
+namespace SwarmsOfGhosts.App.Gameplay.Levels
 {
     public interface ILevelsConfig
     {

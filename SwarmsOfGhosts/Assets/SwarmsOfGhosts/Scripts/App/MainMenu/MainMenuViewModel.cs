@@ -1,7 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using SceneManagement;
 using SwarmsOfGhosts.App.Loading;
-using SwarmsOfGhosts.App.MetaGame.Saves;
+using SwarmsOfGhosts.App.Saves;
 using SwarmsOfGhosts.App.SettingsMenu;
 using UniRx;
 using UnityEngine;
