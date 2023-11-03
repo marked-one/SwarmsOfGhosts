@@ -1,13 +1,3 @@
-# SwarmsOfGhosts
-
-![Game screenshot](Screenshot.png)
-
-A simple example project made with Unity showcasing some advanced programming techniques: DI, MVVM, Reactive Programming, Unit Testing, async/await, DOTS ECS.
-
-## LICENSE
-
-[MIT License](LICENSE.md)
-
 MIT License
 
 Copyright (c) 2023 Vladimir Klubkov
