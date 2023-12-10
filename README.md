@@ -1,4 +1,4 @@
-# SwarmsOfGhosts
+# Swarms of Ghosts
 
 ![Game screenshot](screenshot.png)
 
